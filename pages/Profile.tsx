@@ -100,7 +100,7 @@ const Profile: React.FC<{ userData: UserProfile | null }> = ({ userData: initial
              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-8 border border-zinc-100 shadow-sm">
                <i className="fas fa-user-lock text-3xl text-zinc-300"></i>
              </div>
-             <h2 className="text-2xl md:text-3xl font-black mb-3 tracking-tight text-[#06331e]">Access Restricted</h2>
+             <h2 className="text-2xl md:text-3xl font-black mb-3 tracking-tight text-[#06331e]">Please Login</h2>
              <p className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-10 max-w-sm leading-relaxed">Sign in to track orders, manage preferences, and secure your account.</p>
              <button onClick={() => navigate('/auth-selector')} className="px-12 py-5 bg-[#06331e] text-white rounded-full font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-[#06331e]/20 hover:bg-[#0a4a2b] hover:scale-105 active:scale-95 transition-all">Authenticate Now</button>
           </div>
