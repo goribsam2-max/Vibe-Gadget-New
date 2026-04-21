@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VibeGadget | Premium Tech Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.15.4/css/all.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "29c39d8a-7be8-404a-8a33-5616086735fa",
+          safari_web_id: "web.onesignal.auto.18f55e14-9585-4855-a0ee-ea6515e10e22",
+          notifyButton: { enable: false },
+        });
+      });
+    </script>
+    <style>
+        :root {
+            --zinc-50: #fafafa;
+            --zinc-100: #f4f4f5;
+            --zinc-200: #e4e4e7;
+            --zinc-900: #06331e;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF;
+            color: var(--zinc-900);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .glass-dark {
+            background: rgba(9, 9, 11, 0.88);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        ::-webkit-scrollbar { width: 6px; background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--zinc-200); border-radius: 10px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .btn-primary {
+            background-color: #06331e;
+            color: #FFFFFF;
+            border-radius: 20px;
+            padding: 18px;
+            font-weight: 800;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: scale(1.02); }
+        .btn-primary:active { transform: scale(0.96); }
+        
+        /* Smooth transitions */
+        .page-transition-enter { opacity: 0; transform: translateY(10px); }
+        .page-transition-enter-active { opacity: 1; transform: translateY(0); transition: all 400ms; }
+        .page-transition-exit { opacity: 1; transform: translateY(0); }
+        .page-transition-exit-active { opacity: 0; transform: translateY(-10px); transition: all 400ms; }
+
+        @media (min-width: 1024px) {
+            h1 { font-size: 5rem !important; }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "firebase/": "https://esm.sh/firebase@^12.8.0/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.40.0",
+    "framer-motion": "https://esm.sh/framer-motion@^11.18.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
