@@ -4,12 +4,38 @@ import { auth, db } from '../firebase';
 import { deleteUser } from 'firebase/auth';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { useNotify } from '../components/Notifications';
+import { motion } from 'framer-motion';
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
   const notify = useNotify();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [pushEnabled, setPushEnabled] = useState(false);
+
+  React.useEffect(() => {
+    const isEnabled = localStorage.getItem('vibe_push_enabled') === 'true';
+    setPushEnabled(isEnabled);
+  }, []);
+
+  const togglePush = async () => {
+    const OneSignal = (window as any).OneSignal;
+    if (!OneSignal) return;
+    
+    if (!pushEnabled) {
+      await OneSignal.Notifications.requestPermission();
+      localStorage.setItem('vibe_push_enabled', 'true');
+      setPushEnabled(true);
+      notify("Push notifications enabled", "success");
+    } else {
+      // Note: Truly disabling requires browser settings, 
+      // but we store the preference local state
+      localStorage.setItem('vibe_push_enabled', 'false');
+      setPushEnabled(false);
+      notify("Push notifications disabled locally", "info");
+    }
+  };
 
   const handleDeleteAccount = async () => {
     const user = auth.currentUser;
@@ -38,7 +64,6 @@ const Settings: React.FC = () => {
   };
 
   const options = [
-    { label: 'Notification Settings', path: '/notifications', icon: 'fas fa-bell' },
     { label: 'Password Manager', path: '/settings/password', icon: 'fas fa-lock' },
     { label: 'Privacy Policy', path: '/privacy', icon: 'fas fa-shield-alt' },
     { label: 'Delete Account', path: 'DELETE', danger: true, icon: 'fas fa-trash-alt' }
@@ -57,6 +82,22 @@ const Settings: React.FC = () => {
        </div>
 
        <div className="space-y-4">
+          <div className="w-full flex items-center justify-between p-4 px-6 bg-zinc-50 border border-zinc-100 rounded-full hover:shadow-sm transition-all">
+             <div className="flex items-center space-x-4">
+                <i className="fas fa-bell w-5 text-center text-zinc-400"></i>
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm uppercase tracking-widest text-[#06331e]">Push Notifications</span>
+                  <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">{pushEnabled ? 'Enabled' : 'Disabled'}</span>
+                </div>
+             </div>
+             <button 
+               onClick={togglePush}
+               className={`w-12 h-6 rounded-full p-1 transition-colors flex ${pushEnabled ? 'bg-emerald-500 justify-end' : 'bg-zinc-300 justify-start'}`}
+             >
+                <motion.div layout className="w-4 h-4 bg-white rounded-full shadow-sm"></motion.div>
+             </button>
+          </div>
+
           {options.map((opt, i) => (
             <button 
                key={i} 

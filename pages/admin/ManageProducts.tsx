@@ -23,7 +23,9 @@ const ManageProducts: React.FC = () => {
     description: '',
     category: 'Mobile',
     stock: 10,
-    imageFiles: [] as File[]
+    imageFiles: [] as File[],
+    isOffer: false,
+    offerPrice: 0
   });
 
   const fetchProducts = async () => {
@@ -41,7 +43,9 @@ const ManageProducts: React.FC = () => {
       description: product.description,
       category: product.category,
       stock: product.stock,
-      imageFiles: []
+      imageFiles: [],
+      isOffer: product.isOffer || false,
+      offerPrice: product.offerPrice || 0
     });
     setIsAdding(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -65,6 +69,8 @@ const ManageProducts: React.FC = () => {
         description: formData.description,
         category: formData.category,
         stock: Number(formData.stock),
+        isOffer: Boolean(formData.isOffer),
+        offerPrice: Number(formData.offerPrice || 0),
       };
 
       if (imageUrls.length > 0) {
@@ -106,22 +112,20 @@ const ManageProducts: React.FC = () => {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-10 pb-32 min-h-screen bg-zinc-50/30">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
+    <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-10 pb-32 min-h-screen bg-white">
+      <div className="flex items-center justify-between mb-12">
         <div className="flex items-center space-x-6">
-           <button onClick={() => navigate('/admin')} className="p-4 bg-white border border-zinc-200 text-zinc-900 rounded-2xl shadow-sm active:scale-95 transition-all hover:bg-zinc-50">
-             <i className="fas fa-chevron-left text-xs"></i>
-           </button>
-           <div>
-              <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-zinc-900">Products.</h1>
-              <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Catalog Management</p>
-           </div>
+          <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><i className="fas fa-chevron-left text-xs"></i></button>
+          <div>
+             <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#06331e] mb-1.5">Products Inventory</h1>
+             <p className="text-zinc-400 text-[10px] md:text-xs font-bold tracking-widest uppercase">Catalog Management</p>
+          </div>
         </div>
         <button 
           onClick={() => { setIsAdding(!isAdding); setEditingId(null); setFormData({ name: '', price: 0, description: '', category: 'Mobile', stock: 10, imageFiles: [] }); }}
-          className={`px-8 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest shadow-sm transition-all active:scale-95 border ${isAdding ? 'bg-white text-zinc-900 border-zinc-200 hover:bg-zinc-50' : 'bg-black text-white border-black hover:bg-zinc-900'}`}
+          className={`px-6 py-3 rounded-full font-bold uppercase text-[10px] tracking-widest shadow-sm transition-all active:scale-95 border ${isAdding ? 'bg-white text-zinc-900 border-zinc-200 hover:bg-zinc-50' : 'bg-zinc-900 text-white border-zinc-900 hover:bg-black'}`}
         >
-          {isAdding ? "Cancel Action" : "Add New Product"}
+          {isAdding ? "Cancel" : "Add Product"}
         </button>
       </div>
 
@@ -186,6 +190,33 @@ const ManageProducts: React.FC = () => {
               {editingId && <p className="text-[10px] text-zinc-400 mt-3 font-medium px-1">Leave empty to keep existing images.</p>}
             </div>
 
+            <div className="bg-red-50/50 p-6 rounded-2xl border border-red-100">
+               <div className="flex items-center mb-6">
+                  <input 
+                    type="checkbox" 
+                    id="isOfferCheckbox"
+                    className="w-5 h-5 rounded text-red-500 focus:ring-red-500 border border-red-200 accent-red-500 bg-white"
+                    checked={formData.isOffer}
+                    onChange={e => setFormData({...formData, isOffer: e.target.checked})}
+                  />
+                  <label htmlFor="isOfferCheckbox" className="ml-3 text-[11px] font-black text-red-600 uppercase tracking-widest cursor-pointer mt-0.5">Special Offer Event Product</label>
+               </div>
+               
+               <AnimatePresence>
+                 {formData.isOffer && (
+                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                     <label className="block text-[10px] font-bold text-red-400 uppercase tracking-widest mb-3 px-1">Offer Price (৳)</label>
+                     <input 
+                       type="number" className="w-full p-4 bg-white rounded-xl outline-none border border-red-200 focus:border-red-400 transition-all font-medium text-sm text-red-600 shadow-inner" required={formData.isOffer}
+                       value={formData.offerPrice}
+                       onChange={e => setFormData({...formData, offerPrice: Number(e.target.value)})}
+                     />
+                     <p className="text-[9px] text-red-400 font-bold uppercase mt-3 tracking-widest px-1">Original Price: {formData.price}৳ (Will show struck through)</p>
+                   </motion.div>
+                 )}
+               </AnimatePresence>
+            </div>
+
             <div>
               <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-3 px-1">Product Description</label>
               <textarea 
@@ -224,10 +255,10 @@ const ManageProducts: React.FC = () => {
              </div>
              
              <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center space-y-3 opacity-0 group-hover:opacity-100 transition-all rounded-2xl border border-zinc-200">
-                <button onClick={() => handleEdit(p)} className="w-12 h-12 bg-white border border-zinc-200 rounded-xl flex items-center justify-center text-zinc-700 hover:text-black hover:bg-zinc-50 transition-all shadow-sm">
+                <button onClick={() => handleEdit(p)} className="w-12 h-12 bg-white border border-zinc-200 rounded-full flex items-center justify-center text-zinc-700 hover:text-black hover:bg-zinc-50 transition-all shadow-sm">
                    <i className="fas fa-pen text-sm"></i>
                 </button>
-                <button onClick={() => handleDelete(p.id)} className="w-12 h-12 bg-red-50 border border-red-100 rounded-xl flex items-center justify-center text-red-500 hover:bg-red-100 transition-all shadow-sm">
+                <button onClick={() => handleDelete(p.id)} className="w-12 h-12 bg-red-50 border border-red-100 rounded-full flex items-center justify-center text-red-500 hover:bg-red-100 transition-all shadow-sm">
                    <i className="fas fa-trash text-sm"></i>
                 </button>
              </div>

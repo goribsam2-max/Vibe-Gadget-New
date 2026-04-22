@@ -86,7 +86,7 @@ const AuthSelector: React.FC = () => {
   return (
     <div className="h-screen flex flex-col p-10 items-center justify-center text-center bg-zinc-50/30 max-w-md mx-auto font-inter">
       <div className="flex-1 flex flex-col items-center justify-center w-full">
-        <Logo scale={1.3} className="mb-6" />
+        <Logo scale={1.3} centerOrigin={true} className="mb-6" />
         <p className="text-zinc-500 text-sm font-medium mb-12 px-4 leading-relaxed">
           Premium mobile accessories and gadgets delivered right to your doorstep in Bangladesh.
         </p>

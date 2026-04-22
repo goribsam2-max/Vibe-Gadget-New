@@ -24,7 +24,10 @@ const ManageConfig: React.FC = () => {
     appleServiceId: "",
     googleLogin: true,
     facebookLogin: false,
-    appleLogin: false
+    appleLogin: false,
+    deliveryCharge: 150,
+    storeOpen: true,
+    storeNotice: ""
   });
 
   useEffect(() => {
@@ -97,6 +100,41 @@ const ManageConfig: React.FC = () => {
         >
            <Field label="Bot Token" value={configs.telegramToken} onChange={(v: string) => setConfigs({...configs, telegramToken: v})} />
            <Field label="Chat ID" value={configs.telegramChatId} onChange={(v: string) => setConfigs({...configs, telegramChatId: v})} />
+        </AccordionSection>
+
+        <AccordionSection 
+          id="store" 
+          title="Global Store Config" 
+          icon="fas fa-store" 
+          expanded={expandedSection === 'store'} 
+          onToggle={() => setExpandedSection(expandedSection === 'store' ? null : 'store')}
+        >
+           <div className="space-y-6">
+              <div className="p-5 bg-zinc-50 rounded-2xl border border-zinc-100">
+                <Toggle label="Store Open (Accepting Orders)" active={configs.storeOpen} onToggle={() => setConfigs({...configs, storeOpen: !configs.storeOpen})} />
+                {!configs.storeOpen && <p className="text-[10px] uppercase font-bold text-red-500 mt-4 tracking-widest px-1">Orders are currently paused</p>}
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-zinc-400 uppercase mb-2 block tracking-widest">Base Delivery Charge (৳)</label>
+                <input 
+                    type="number" 
+                    value={configs.deliveryCharge}
+                    onChange={e => setConfigs({...configs, deliveryCharge: Number(e.target.value)})}
+                    className="w-full bg-zinc-50 p-4 rounded-xl text-sm font-medium outline-none border border-transparent focus:border-zinc-900 transition-all font-mono" 
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-zinc-400 uppercase mb-2 block tracking-widest">Global Store Notice (Optional)</label>
+                <textarea 
+                    value={configs.storeNotice}
+                    onChange={e => setConfigs({...configs, storeNotice: e.target.value})}
+                    placeholder="E.g., Expect 2 days delay due to weather." 
+                    className="w-full bg-zinc-50 p-4 rounded-xl text-sm font-medium outline-none border border-transparent focus:border-zinc-900 transition-all min-h-[100px]" 
+                />
+              </div>
+           </div>
         </AccordionSection>
 
         <AccordionSection 

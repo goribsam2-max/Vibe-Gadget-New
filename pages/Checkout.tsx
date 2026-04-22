@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
-import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { useNotify } from '../components/Notifications';
 import { OrderStatus, UserProfile } from '../types';
 import { sendOrderToTelegram } from '../services/telegram';
@@ -13,6 +13,7 @@ const CheckoutPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [userIp, setUserIp] = useState<string>('');
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [settings, setSettings] = useState<any>(null);
   const [shipping, setShipping] = useState({
     name: '',
     address: localStorage.getItem('vibe_shipping_address') || '',
@@ -22,6 +23,10 @@ const CheckoutPage: React.FC = () => {
     trxId: ''
   });
 
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponError, setCouponError] = useState('');
+
   const navigate = useNavigate();
   const notify = useNotify();
 
@@ -30,6 +35,10 @@ const CheckoutPage: React.FC = () => {
       .then(res => res.json())
       .then(data => setUserIp(data.ip))
       .catch(() => setUserIp('Unavailable'));
+
+    const unsubSettings = onSnapshot(doc(db, 'settings', 'platform'), (doc) => {
+      if (doc.exists()) setSettings(doc.data());
+    });
 
     const cart = JSON.parse(localStorage.getItem('f_cart') || '[]');
     if (cart.length === 0) { navigate('/'); return; }
@@ -43,13 +52,51 @@ const CheckoutPage: React.FC = () => {
         }
       });
     }
-  }, []);
+
+    return () => unsubSettings();
+  }, [navigate]);
 
   const BKASH_NUMBER = "01747708843";
 
   const copyNumber = () => {
     navigator.clipboard.writeText(BKASH_NUMBER);
     notify("bKash Number copied!", "success");
+  };
+
+  const applyCoupon = async () => {
+     setCouponError('');
+     if(!couponCode.trim()) return;
+     
+     setLoading(true);
+     try {
+       // Search for coupon
+       const { query, where, getDocs, collection } = await import('firebase/firestore');
+       const q = query(collection(db, 'coupons'), where('code', '==', couponCode.trim().toUpperCase()));
+       const snap = await getDocs(q);
+       
+       if(snap.empty) {
+          setCouponError('Invalid coupon code');
+       } else {
+          const c = snap.docs[0].data();
+          if(!c.isActive) {
+             setCouponError('Coupon is no longer active');
+          } else if (c.usedCount >= c.maxUses) {
+             setCouponError('Coupon usage limit reached');
+          } else {
+             setAppliedCoupon({ id: snap.docs[0].id, ...c });
+             notify("Coupon applied!", "success");
+             setCouponError('');
+          }
+       }
+     } catch (e) {
+       setCouponError('Error verifying coupon');
+     }
+     setLoading(false);
+  };
+
+  const removeCoupon = () => {
+      setAppliedCoupon(null);
+      setCouponCode('');
   };
 
   const placeOrder = async () => {
@@ -66,11 +113,35 @@ const CheckoutPage: React.FC = () => {
     
     setLoading(true);
     try {
+      let isSuspicious = false;
+      let riskReason = "";
+
+      const phoneRe = /^(01\d{9})$/;
+      if (!phoneRe.test(shipping.phone.replace(/[^0-9]/g, ''))) {
+          isSuspicious = true;
+          riskReason += "Invalid phone formatting. ";
+      }
+      
+      const repeats = /(.)\1{5,}/; // Same digit repeated 6+ times (e.g. 01000000000)
+      if (repeats.test(shipping.phone.replace(/[^0-9]/g, ''))) {
+          isSuspicious = true;
+          riskReason += "Fake phone sequence. ";
+      }
+
+      const total = items.reduce((a,c)=>a+(c.price*c.quantity), 0) + (settings?.deliveryCharge || 150) - discountAmount;
+      if (shipping.payment === 'Cash on Delivery' && total > 20000) {
+          isSuspicious = true;
+          riskReason += "High value COD. ";
+      }
+
       const orderData = {
         userId: auth.currentUser?.uid || 'guest',
         customerName: shipping.name,
         items: items.map(i => ({ productId: i.id, quantity: i.quantity, priceAtPurchase: i.price, name: i.name, image: i.image })),
-        total: items.reduce((a,c)=>a+(c.price*c.quantity), 0) + 150,
+        total: total,
+        subTotal: subTotal,
+        discount: discountAmount,
+        couponCode: appliedCoupon ? appliedCoupon.code : null,
         status: OrderStatus.PROCESSING,
         paymentMethod: shipping.payment,
         paymentOption: shipping.payment === 'bKash' ? shipping.paymentOption : 'N/A',
@@ -78,10 +149,21 @@ const CheckoutPage: React.FC = () => {
         shippingAddress: shipping.address,
         contactNumber: shipping.phone,
         ipAddress: userIp,
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        isSuspicious,
+        riskReason: riskReason.trim()
       };
       
       const docRef = await addDoc(collection(db, 'orders'), orderData);
+
+      // Increment coupon usage
+      if (appliedCoupon) {
+         try {
+            const { increment } = await import('firebase/firestore');
+            await updateDoc(doc(db, 'coupons', appliedCoupon.id), { usedCount: increment(1) });
+         } catch(e) { console.error("Error updating coupon", e); }
+      }
+
       await sendOrderToTelegram({ ...orderData, id: docRef.id });
       localStorage.removeItem('f_cart');
       notify("Order Placed!", "success");
@@ -90,12 +172,35 @@ const CheckoutPage: React.FC = () => {
   };
 
   const subTotal = items.reduce((a,c)=>a+(c.price*c.quantity), 0);
-  const deliveryFee = 150;
-  const totalAmount = subTotal + deliveryFee;
+  const deliveryFee = settings?.deliveryCharge || 150;
+  
+  let discountAmount = 0;
+  if(appliedCoupon) {
+      if(appliedCoupon.type === 'percent') {
+          discountAmount = Math.round(subTotal * (appliedCoupon.discount / 100));
+      } else {
+          discountAmount = appliedCoupon.discount;
+      }
+  }
+
+  const totalAmount = subTotal + deliveryFee - discountAmount;
+
+  if (settings && !settings.storeOpen) {
+      return (
+          <div className="min-h-screen flex items-center justify-center bg-white p-6">
+              <div className="text-center bg-zinc-50 p-10 rounded-3xl max-w-md border border-zinc-100">
+                  <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl"><i className="fas fa-store-slash"></i></div>
+                  <h2 className="text-xl font-black tracking-tight mb-2">Store is Currently Closed</h2>
+                  <p className="text-xs text-zinc-500 font-bold mb-6">We are not accepting orders at this moment. Please check back later.</p>
+                  <button onClick={() => navigate('/')} className="px-8 py-3 bg-black text-white rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-800 transition-colors">Return Home</button>
+              </div>
+          </div>
+      );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10 pb-48 bg-white min-h-screen font-inter">
-      <div className="flex items-center space-x-6 mb-12">
+      <div className="flex items-center space-x-6 mb-8">
           <button onClick={() => navigate(-1)} className="p-3 bg-zinc-50 rounded-xl border border-zinc-100 hover:bg-[#06331e] hover:text-white transition-all">
              <i className="fas fa-arrow-left text-xs"></i>
           </button>
@@ -104,6 +209,13 @@ const CheckoutPage: React.FC = () => {
             <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Order Processing</p>
           </div>
       </div>
+
+      {settings?.storeNotice && (
+          <div className="mb-10 bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-start space-x-3 text-blue-800">
+              <i className="fas fa-info-circle mt-0.5"></i>
+              <p className="text-xs font-bold leading-relaxed">{settings.storeNotice}</p>
+          </div>
+      )}
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-7 space-y-8">
@@ -168,6 +280,28 @@ const CheckoutPage: React.FC = () => {
               )}
             </AnimatePresence>
           </section>
+
+          <section className="bg-white p-6 md:p-8 rounded-3xl border border-zinc-200 shadow-sm">
+             <h2 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-6">3. Promo Code</h2>
+             {appliedCoupon ? (
+                <div className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                   <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600"><i className="fas fa-check text-xs"></i></div>
+                      <div>
+                         <p className="text-[10px] font-black uppercase tracking-widest text-emerald-800">{appliedCoupon.code}</p>
+                         <p className="text-[9px] font-bold text-emerald-600 mt-0.5 uppercase tracking-widest">Applied Successfully</p>
+                      </div>
+                   </div>
+                   <button onClick={removeCoupon} className="text-[9px] font-bold text-red-500 uppercase tracking-widest hover:text-red-600"><i className="fas fa-times"></i> Remove</button>
+                </div>
+             ) : (
+                <div className="flex space-x-3 relative">
+                   <input type="text" value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder="ENTER CODE" className={`flex-1 p-4 bg-zinc-50 border rounded-xl text-sm font-bold uppercase transition-all ${couponError ? 'border-red-300 focus:border-red-500' : 'border-zinc-200 focus:border-[#06331e]'}`} />
+                   <button onClick={applyCoupon} disabled={!couponCode} className="px-6 bg-[#06331e] text-white rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-900 transition-colors disabled:opacity-50">Apply</button>
+                   {couponError && <p className="absolute -bottom-5 left-0 text-[9px] text-red-500 font-bold uppercase tracking-widest">{couponError}</p>}
+                </div>
+             )}
+          </section>
         </div>
 
         <div className="lg:col-span-5">
@@ -178,6 +312,12 @@ const CheckoutPage: React.FC = () => {
                   <span>Subtotal</span>
                   <span>৳{subTotal}</span>
                 </div>
+                {appliedCoupon && (
+                <div className="flex justify-between text-[10px] font-bold text-emerald-400 uppercase tracking-widest">
+                  <span>Discount ({appliedCoupon.code})</span>
+                  <span>-৳{discountAmount}</span>
+                </div>
+                )}
                 <div className="flex justify-between text-[10px] font-bold text-white/50 uppercase tracking-widest">
                   <span>Delivery</span>
                   <span>৳150</span>

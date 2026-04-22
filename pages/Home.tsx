@@ -208,6 +208,60 @@ const Home: React.FC = () => {
         </motion.div>
       )}
 
+      {products.filter(p => p.isOffer).length > 0 && (
+        <div className="mb-12">
+           <div className="bg-red-50/50 rounded-2xl p-4 md:p-5 border border-red-100 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-red-400 rounded-full blur-[80px] opacity-10"></div>
+              <div className="relative z-10">
+                 <div className="flex items-center space-x-3 mb-4">
+                     <div className="w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center">
+                        <i className="fas fa-bolt text-[10px] animate-pulse"></i>
+                     </div>
+                     <div>
+                        <h2 className="text-sm font-black tracking-tight text-red-950 uppercase">Limited Deals</h2>
+                     </div>
+                 </div>
+                 
+                 <div className="flex overflow-x-auto no-scrollbar gap-3 md:gap-4 pb-2">
+                    {products.filter(p => p.isOffer).map(product => {
+                       const originalPrice = product.price;
+                       const offerPrice = product.offerPrice || product.price;
+                       const discount = Math.round(((originalPrice - offerPrice) / originalPrice) * 100);
+                       const productSlug = product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                       
+                       return (
+                         <div key={product.id} onClick={() => navigate(`/product/${productSlug}/${product.id}`)} className="flex-none w-[140px] md:w-[160px] bg-white rounded-2xl p-2.5 border border-red-100/50 shadow-sm hover:border-red-200 transition-colors cursor-pointer group hover:-translate-y-1">
+                            <div className="relative aspect-square mb-3 bg-zinc-50 rounded-xl flex items-center justify-center overflow-hidden border border-zinc-100 group-hover:border-zinc-200 transition-colors p-4">
+                               <img 
+                                 src={product.image} 
+                                 loading="lazy"
+                                 className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out" 
+                                 alt={product.name}
+                                 style={{ opacity: 0 }}
+                                 onLoad={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transition = 'opacity 0.4s ease'; }}
+                               />
+                               {discount > 0 && (
+                                  <div className="absolute top-2 left-2 bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded shadow-sm">
+                                     -{discount}%
+                                  </div>
+                               )}
+                            </div>
+                            <div className="px-1">
+                               <h3 className="font-bold text-[10px] md:text-xs text-zinc-900 group-hover:text-red-600 transition-colors truncate tracking-tight">{product.name}</h3>
+                               <div className="flex items-center space-x-1.5 mt-1">
+                                  <p className="text-red-600 text-[11px] md:text-sm font-black uppercase tracking-tight">৳{offerPrice}</p>
+                                  {discount > 0 && <p className="text-[8px] md:text-[9px] font-bold text-zinc-400 line-through">৳{originalPrice}</p>}
+                               </div>
+                            </div>
+                         </div>
+                       );
+                    })}
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
+
       {/* Added Feature Section */}
       <div className="flex overflow-x-auto no-scrollbar gap-3 mb-16 pb-2 px-2 mask-linear-fade">
          <div className="bg-zinc-50 rounded-full px-5 py-3 flex items-center shrink-0 border border-zinc-100 shadow-sm">
@@ -262,9 +316,16 @@ const Home: React.FC = () => {
             >
               <div className="block group relative">
                 <Link to={`/product/${product.id}`} className="block">
-                  <div className="bg-zinc-50/30 rounded-[2rem] mb-4 overflow-hidden relative border border-zinc-100 shadow-sm group-hover:shadow-xl group-hover:border-emerald-500/20 group-hover:-translate-y-2 transition-all duration-300">
-                    <img src={product.image} className="w-full h-auto object-contain p-8 group-hover:scale-110 transition-transform duration-500 mix-blend-multiply" alt={product.name} />
-                    <div className="absolute top-4 right-4">
+                  <div className="bg-zinc-50/30 rounded-[2rem] mb-4 overflow-hidden relative border border-zinc-100 shadow-sm group-hover:shadow-xl group-hover:border-emerald-500/20 group-hover:-translate-y-2 transition-all duration-300 aspect-[4/5] flex items-center justify-center">
+                    <img 
+                      src={product.image} 
+                      loading="lazy"
+                      className="w-4/5 h-4/5 object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out p-4" 
+                      alt={product.name} 
+                      style={{ opacity: 0 }}
+                      onLoad={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transition = 'opacity 0.4s ease'; }}
+                    />
+                    <div className="absolute top-4 right-4 z-10">
                       <div className="bg-[#06331e] text-white px-3 py-1.5 rounded-full text-[9px] font-bold shadow-md tracking-wider">
                         ৳{product.price}
                       </div>

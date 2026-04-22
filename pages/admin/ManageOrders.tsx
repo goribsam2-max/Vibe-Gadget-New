@@ -41,12 +41,12 @@ const ManageOrders: React.FC = () => {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto px-6 py-10 pb-32 min-h-screen bg-zinc-50/30">
-      <div className="mb-12 flex items-center space-x-6">
-        <button onClick={() => navigate('/admin')} className="p-4 bg-white border border-zinc-200 text-zinc-900 rounded-2xl shadow-sm active:scale-95 transition-all hover:bg-zinc-50"><i className="fas fa-chevron-left text-xs"></i></button>
+    <div className="max-w-[1440px] mx-auto px-6 py-10 pb-32 min-h-screen bg-white">
+      <div className="flex items-center space-x-6 mb-12">
+        <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><i className="fas fa-chevron-left text-xs"></i></button>
         <div>
-          <h1 className="text-3xl font-black tracking-tighter text-zinc-900">Orders.</h1>
-          <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Manual Logistics Management</p>
+           <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#06331e] mb-1.5">Orders Overview</h1>
+           <p className="text-zinc-400 text-[10px] md:text-xs font-bold tracking-widest uppercase">Manual Logistics Management</p>
         </div>
       </div>
 
@@ -83,15 +83,42 @@ const ManageOrders: React.FC = () => {
 
              <div className="flex-1 space-y-8">
                 <div className="flex flex-col md:flex-row gap-6">
-                   <div className="flex-1">
-                      <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-2 px-1">Manual Tracking ID</p>
-                      <input 
-                        type="text" 
-                        placeholder="Assign Custom ID..."
-                        className="w-full bg-zinc-50 p-4 rounded-xl text-[11px] font-bold outline-none border border-zinc-200 focus:border-black transition-all uppercase"
-                        defaultValue={order.trackingId}
-                        onBlur={(e) => updateTrackingId(order.id, e.target.value)}
-                      />
+                   <div className="flex-1 space-y-4">
+                      <div>
+                        <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-2 px-1">Manual Tracking ID</p>
+                        <input 
+                          type="text" 
+                          placeholder="Assign Custom ID..."
+                          className="w-full bg-zinc-50 p-4 rounded-xl text-[11px] font-bold outline-none border border-zinc-200 focus:border-black transition-all uppercase"
+                          defaultValue={order.trackingId}
+                          onBlur={(e) => updateTrackingId(order.id, e.target.value)}
+                        />
+                      </div>
+                      
+                      {order.status === OrderStatus.ON_THE_WAY && (
+                        <div className="grid grid-cols-2 gap-4 animate-fade-in">
+                          <div>
+                            <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest mb-2 px-1">Rider Number</p>
+                            <input 
+                              type="text" 
+                              placeholder="Phone..."
+                              className="w-full bg-emerald-50/50 p-4 rounded-xl text-[11px] font-bold outline-none border border-emerald-100 focus:border-emerald-500 transition-all"
+                              defaultValue={order.riderNumber || ''}
+                              onBlur={(e) => updateDoc(doc(db, 'orders', order.id), { riderNumber: e.target.value.trim() })}
+                            />
+                          </div>
+                          <div>
+                            <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest mb-2 px-1">Courier Name</p>
+                            <input 
+                              type="text" 
+                              placeholder="e.g. Pathao"
+                              className="w-full bg-emerald-50/50 p-4 rounded-xl text-[11px] font-bold outline-none border border-emerald-100 focus:border-emerald-500 transition-all uppercase"
+                              defaultValue={order.courierName || ''}
+                              onBlur={(e) => updateDoc(doc(db, 'orders', order.id), { courierName: e.target.value.trim() })}
+                            />
+                          </div>
+                        </div>
+                      )}
                    </div>
                    <div className="text-right flex flex-col justify-end">
                       <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-1">Grand Total</p>

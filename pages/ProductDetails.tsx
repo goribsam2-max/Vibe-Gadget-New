@@ -133,15 +133,8 @@ const ProductDetails: React.FC = () => {
       
       <div className="w-full lg:w-1/2 lg:sticky lg:top-12">
         <div className="relative aspect-square md:aspect-video lg:aspect-square bg-zinc-50 rounded-b-[3rem] lg:rounded-[3rem] overflow-hidden flex items-center justify-center border border-zinc-100 group">
-          <button onClick={() => navigate(-1)} className="absolute top-6 left-6 z-10 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full text-[#06331e] shadow-md border border-zinc-100/50 hover:bg-[#06331e] hover:text-white transition-all hover:scale-105 active:scale-95">
-            <i className="fas fa-arrow-left"></i>
-          </button>
-
-          <button 
-            onClick={toggleWishlist}
-            className={`absolute top-6 right-6 z-10 w-12 h-12 flex items-center justify-center rounded-full shadow-md border border-zinc-100/50 transition-all hover:scale-105 active:scale-95 ${isWishlisted ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white/90 backdrop-blur-md text-[#06331e] hover:bg-red-50 hover:text-red-500'}`}
-          >
-            <i className={`${isWishlisted ? 'fas' : 'far'} fa-heart`}></i>
+          <button onClick={() => navigate(-1)} className="absolute top-6 left-6 z-10 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full text-zinc-600 shadow-sm border border-zinc-200 hover:bg-zinc-900 hover:text-white transition-all active:scale-95">
+            <i className="fas fa-arrow-left text-xs"></i>
           </button>
           
           <AnimatePresence initial={false} custom={direction}>
@@ -193,15 +186,20 @@ const ProductDetails: React.FC = () => {
         <div className="mb-14 px-2">
            <p className="text-xs text-emerald-600 font-bold uppercase tracking-[0.3em] mb-4">{product.category}</p>
            <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-6 leading-tight text-zinc-900">{product.name}</h1>
-           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4">
-              <div className="bg-[#06331e] text-white px-6 py-2.5 rounded-full inline-flex items-center w-fit shadow-lg shadow-emerald-900/20">
-                 <span className="text-sm font-bold opacity-80 mr-1">৳</span>
-                 <span className="text-3xl font-black tracking-tight">{product.price.toLocaleString()}</span>
+           <div className="flex flex-row items-center justify-between mt-4">
+              <div className="flex items-center space-x-3">
+                 <div className="bg-[#06331e] text-white px-5 py-2 rounded-full inline-flex items-center shadow-lg shadow-emerald-900/20 shrink-0">
+                    <span className="text-xs font-bold opacity-80 mr-1">৳</span>
+                    <span className="text-2xl font-black tracking-tight">{(product.isOffer && product.offerPrice ? product.offerPrice : product.price).toLocaleString()}</span>
+                 </div>
+                 {product.isOffer && product.offerPrice && (
+                    <span className="text-zinc-400 font-bold line-through text-lg mt-1">৳{product.price.toLocaleString()}</span>
+                 )}
               </div>
-              <div className="flex items-center space-x-1.5 bg-zinc-50 border border-zinc-100 px-3 py-1.5 rounded-full shadow-sm whitespace-nowrap w-fit self-start sm:self-auto">
+              <div className="flex items-center space-x-1.5 bg-zinc-50 border border-zinc-100 px-3 py-1.5 rounded-full shadow-sm shrink-0">
                  <i className="fas fa-star text-yellow-500 text-[10px]"></i>
                  <span className="text-[10px] font-bold text-zinc-700">{product.rating}</span>
-                 <span className="text-[9px] font-bold text-zinc-400 capitalize">({product.numReviews || 0} reviews)</span>
+                 <span className="text-[9px] font-bold text-zinc-400 capitalize">({product.numReviews || 0} revs)</span>
               </div>
            </div>
         </div>
@@ -253,16 +251,20 @@ const ProductDetails: React.FC = () => {
            </div>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-2xl border-t border-zinc-100 z-50 lg:relative lg:bg-transparent lg:border-0 lg:p-0 lg:mt-20">
-           <motion.button 
-             whileHover={{ scale: 1.02 }}
-             whileTap={{ scale: 0.98 }}
+        <div className="fixed bottom-0 left-0 right-0 p-4 md:p-0 md:relative bg-white/90 backdrop-blur-lg border-t border-zinc-100 md:border-0 md:bg-transparent z-50 flex items-center space-x-4">
+           <button 
              onClick={addToCart} 
-             className="w-full max-w-xl mx-auto py-5 bg-[#06331e] text-white rounded-full flex items-center justify-center space-x-3 shadow-xl shadow-[#06331e]/20 text-sm font-bold uppercase tracking-widest hover:bg-[#0a4a2b] transition-colors"
+             className="flex-1 py-4 md:py-4 bg-zinc-900 border border-zinc-900 text-white rounded-full flex items-center justify-center space-x-3 text-xs font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95 shadow-lg shadow-black/10"
            >
-              <i className="fas fa-shopping-bag"></i>
               <span>Add to Cart</span>
-           </motion.button>
+              <i className="fas fa-arrow-right text-[10px] opacity-70"></i>
+           </button>
+           <button 
+             onClick={toggleWishlist}
+             className={`w-14 h-14 md:w-14 md:h-14 flex items-center justify-center rounded-full border transition-all active:scale-90 shadow-sm ${isWishlisted ? 'bg-red-50 text-red-500 border-red-100' : 'bg-white text-zinc-400 border-zinc-200 hover:border-zinc-300 hover:text-zinc-600'}`}
+           >
+             <i className={`${isWishlisted ? 'fas' : 'far'} fa-heart text-sm`}></i>
+           </button>
         </div>
       </div>
 

@@ -93,14 +93,14 @@ const ManageBanners: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 bg-[#FDFDFD] min-h-screen pb-32">
-      <div className="mb-12 flex items-center space-x-6">
-        <button onClick={() => navigate('/admin')} className="p-4 bg-zinc-900 text-white rounded-2xl active:scale-90 transition-all shadow-xl">
-           <i className="fas fa-chevron-left text-xs"></i>
-        </button>
-        <div>
-           <h1 className="text-3xl md:text-5xl font-black tracking-tighter">Banners.</h1>
-           <p className="text-xs text-zinc-400 font-bold uppercase tracking-widest mt-1">Homepage Visual Management</p>
+    <div className="max-w-7xl mx-auto px-6 py-10 bg-white min-h-screen pb-32">
+      <div className="flex items-center justify-between mb-12">
+        <div className="flex items-center space-x-6">
+          <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><i className="fas fa-chevron-left text-xs"></i></button>
+          <div>
+             <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#06331e] mb-1.5">Store Banners</h1>
+             <p className="text-zinc-400 text-[10px] md:text-xs font-bold tracking-widest uppercase">Homepage Visuals</p>
+          </div>
         </div>
       </div>
 
@@ -153,7 +153,7 @@ const ManageBanners: React.FC = () => {
 
             <button 
                 disabled={uploading}
-                className="btn-primary w-full shadow-2xl disabled:opacity-50 text-[10px] uppercase tracking-widest py-6 rounded-[1.5rem]"
+                className="w-full bg-zinc-900 border border-zinc-900 text-white shadow-sm disabled:opacity-50 text-[10px] font-bold uppercase tracking-widest py-4 rounded-full transition-all hover:bg-black"
             >
               {uploading ? "Uploading..." : (editingId ? "Update Banner" : "Create Banner")}
             </button>

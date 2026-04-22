@@ -1,11 +1,19 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { collection, addDoc } from 'firebase/firestore';
+import { db, auth } from '../firebase';
+import { useNotify } from '../components/Notifications';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const HelpCenter: React.FC = () => {
   const navigate = useNavigate();
+  const notify = useNotify();
   const [activeTab, setActiveTab] = useState('FAQ');
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+  const [ticketMode, setTicketMode] = useState(false);
+  const [ticketForm, setTicketForm] = useState({ subject: '', message: '' });
 
   const faqs = [
     { q: 'How do I track my gadget delivery?', a: 'You can track your order in the "Purchase History" section of your profile. Once shipped, a tracking ID will be visible.' },
@@ -16,68 +24,143 @@ const HelpCenter: React.FC = () => {
   ];
 
   const contactOptions = [
-    { label: 'Customer Hotline', svg: <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />, action: () => window.open('tel:01747708843') },
-    { label: 'WhatsApp Support', svg: <path d="M2 12c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c-1.707 0-3.305-.426-4.704-1.175L2 22l1.175-5.296A9.963 9.963 0 012 12z" />, action: () => window.open('https://wa.me/8801747708843') },
-    { label: 'Vibe Facebook Page', svg: <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3V2z" />, action: () => window.open('https://facebook.com') }
+    { label: 'Customer Hotline', icon: 'fas fa-phone-alt', action: () => window.open('tel:01747708843') },
+    { label: 'WhatsApp Support', icon: 'fab fa-whatsapp', action: () => window.open('https://wa.me/8801747708843') },
+    { label: 'Vibe Facebook Page', icon: 'fab fa-facebook-f', action: () => window.open('https://facebook.com') }
   ];
 
+  const submitTicket = async (e: React.FormEvent) => {
+     e.preventDefault();
+     if(!auth.currentUser) {
+        notify("Please login to submit a ticket", "error");
+        navigate('/auth-selector');
+        return;
+     }
+
+     if (!ticketForm.subject || !ticketForm.message) return;
+
+     try {
+        await addDoc(collection(db, 'helpdesk'), {
+           userId: auth.currentUser.uid,
+           userName: auth.currentUser.displayName || 'User',
+           userEmail: auth.currentUser.email || '',
+           subject: ticketForm.subject,
+           message: ticketForm.message,
+           status: 'Open',
+           createdAt: Date.now()
+        });
+        notify("Ticket submitted successfully", "success");
+        setTicketForm({ subject: '', message: '' });
+        setTicketMode(false);
+     } catch (err) {
+        notify("Failed to submit ticket", "error");
+     }
+  };
+
   return (
-    <div className="p-6 pb-24 animate-fade-in bg-white max-w-md mx-auto min-h-screen">
-       <div className="flex items-center space-x-4 mb-8">
-          <button onClick={() => navigate(-1)} className="p-3 bg-f-gray rounded-2xl">
-             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+    <div className="p-6 md:p-12 pb-48 animate-fade-in bg-white max-w-3xl mx-auto min-h-screen font-inter">
+       <div className="flex items-center space-x-6 mb-12">
+          <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
+             <i className="fas fa-chevron-left text-xs"></i>
           </button>
-          <h1 className="text-xl font-bold tracking-tight">Support Desk</h1>
+          <div>
+            <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#06331e] mb-1.5">{ticketMode ? 'Submit Ticket' : 'Support Desk'}</h1>
+            <p className="text-zinc-400 text-[10px] md:text-xs font-bold tracking-widest uppercase">{ticketMode ? 'Describe your issue' : 'Help & Contact'}</p>
+          </div>
        </div>
 
-       <div className="flex bg-f-gray p-1.5 rounded-[24px] mb-8">
-          {['FAQ', 'Contact'].map(tab => (
-             <button 
-                key={tab} 
-                onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-3 text-xs font-bold rounded-2xl transition-all ${activeTab === tab ? 'bg-black text-white shadow-lg' : 'text-gray-400'}`}
-             >
-                {tab}
-             </button>
-          ))}
-       </div>
-
-       {activeTab === 'FAQ' ? (
-         <div className="space-y-4">
-            {faqs.map((faq, i) => (
-               <div key={i} className="border border-f-light rounded-[32px] overflow-hidden transition-all bg-white">
-                  <button 
-                    onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                    className="w-full p-6 flex justify-between items-center text-left"
-                  >
-                    <span className="text-xs font-bold leading-relaxed">{faq.q}</span>
-                    <svg className={`w-4 h-4 text-gray-300 transition-transform duration-300 ${expandedFaq === i ? 'rotate-180 text-black' : ''}`} fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                  </button>
-                  <div className={`px-6 transition-all duration-300 overflow-hidden ${expandedFaq === i ? 'pb-6 max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <p className="text-xs text-f-gray leading-relaxed font-medium">{faq.a}</p>
-                  </div>
+       <AnimatePresence mode="wait">
+       {!ticketMode ? (
+           <motion.div key="main" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+               <div className="flex bg-zinc-50 p-1.5 rounded-full mb-12 border border-zinc-100 shadow-sm max-w-sm">
+                  {['FAQ', 'Contact'].map(tab => (
+                     <button 
+                        key={tab} 
+                        onClick={() => setActiveTab(tab)}
+                        className={`flex-1 py-3 text-[10px] uppercase tracking-widest font-bold rounded-full transition-all ${activeTab === tab ? 'bg-[#06331e] text-white shadow-md' : 'text-zinc-400 hover:text-zinc-600'}`}
+                     >
+                        {tab}
+                     </button>
+                  ))}
                </div>
-            ))}
-         </div>
+
+               {activeTab === 'FAQ' ? (
+                 <div className="space-y-4">
+                    {faqs.map((faq, i) => (
+                       <div key={i} className="border border-zinc-100 rounded-3xl overflow-hidden transition-all bg-zinc-50/50 shadow-sm hover:border-zinc-200 hover:bg-white group cursor-pointer" onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}>
+                          <button className="w-full p-6 flex justify-between items-center text-left">
+                            <span className="text-xs font-bold text-zinc-800 pr-8 leading-relaxed tracking-tight group-hover:text-[#06331e] transition-colors">{faq.q}</span>
+                            <i className={`fas fa-chevron-down text-[10px] text-zinc-300 transition-transform duration-300 ${expandedFaq === i ? 'rotate-180 text-[#06331e]' : ''}`}></i>
+                          </button>
+                          <div className={`px-6 transition-all duration-300 overflow-hidden ${expandedFaq === i ? 'pb-6 max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                            <p className="text-[11px] text-zinc-500 leading-relaxed font-medium">{faq.a}</p>
+                          </div>
+                       </div>
+                    ))}
+                 </div>
+               ) : (
+                 <div className="space-y-4">
+                    {contactOptions.map((opt, i) => (
+                       <button 
+                          key={i} 
+                          onClick={opt.action}
+                          className="w-full p-4 px-6 bg-zinc-50 border border-zinc-100 rounded-full hover:shadow-sm hover:bg-white hover:border-zinc-200 text-zinc-600 transition-all flex items-center justify-between group cursor-pointer active:scale-95"
+                       >
+                          <div className="flex items-center space-x-4">
+                             <i className={`${opt.icon} w-6 text-center text-zinc-400 group-hover:text-emerald-500 transition-colors`}></i>
+                             <span className="font-bold text-sm uppercase tracking-widest text-zinc-700 group-hover:text-[#06331e] transition-colors">{opt.label}</span>
+                          </div>
+                          <i className="fas fa-chevron-right text-[10px] text-zinc-300 group-hover:text-[#06331e] transition-colors"></i>
+                       </button>
+                    ))}
+                    <div className="h-4"></div>
+                    <button 
+                       onClick={() => setTicketMode(true)}
+                       className="w-full p-6 bg-[#06331e] rounded-3xl text-white font-bold uppercase tracking-widest text-xs flex flex-col items-center justify-center hover:bg-emerald-900 transition-colors shadow-lg shadow-[#06331e]/20"
+                    >
+                       <i className="fas fa-ticket-alt text-2xl mb-3 text-emerald-400"></i>
+                       Open Support Ticket
+                       <span className="text-[9px] font-normal opacity-70 mt-1 capitalize tracking-normal">Our team will respond within 24 hours</span>
+                    </button>
+                 </div>
+               )}
+           </motion.div>
        ) : (
-         <div className="space-y-4">
-            {contactOptions.map((opt, i) => (
-               <div 
-                  key={i} 
-                  onClick={opt.action}
-                  className="p-6 bg-white border border-f-light rounded-[32px] flex justify-between items-center hover:bg-f-gray cursor-pointer transition-colors shadow-sm active:scale-95 transition-transform"
-               >
-                  <div className="flex items-center space-x-4">
-                     <div className="w-10 h-10 bg-f-gray rounded-2xl flex items-center justify-center">
-                        <svg className="w-5 h-5 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">{opt.svg}</svg>
-                     </div>
-                     <span className="text-xs font-bold tracking-tight">{opt.label}</span>
-                  </div>
-                  <svg className="w-4 h-4 text-gray-200" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-               </div>
-            ))}
-         </div>
+           <motion.div key="ticket" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+               <form onSubmit={submitTicket} className="space-y-6">
+                   <div>
+                      <label className="block text-[10px] uppercase font-bold text-zinc-400 tracking-widest mb-3">Issue Subject</label>
+                      <input 
+                         type="text" 
+                         required
+                         value={ticketForm.subject}
+                         onChange={e => setTicketForm({...ticketForm, subject: e.target.value})}
+                         className="w-full p-5 bg-zinc-50 border border-zinc-200 rounded-2xl focus:border-[#06331e] focus:bg-white transition-all text-sm font-bold text-zinc-900"
+                         placeholder="e.g. Order #1234 delivery delay"
+                      />
+                   </div>
+                   <div>
+                      <label className="block text-[10px] uppercase font-bold text-zinc-400 tracking-widest mb-3">Message</label>
+                      <textarea 
+                         required
+                         value={ticketForm.message}
+                         onChange={e => setTicketForm({...ticketForm, message: e.target.value})}
+                         className="w-full p-5 bg-zinc-50 border border-zinc-200 rounded-2xl h-40 focus:border-[#06331e] focus:bg-white transition-all text-sm font-medium text-zinc-800"
+                         placeholder="Describe your issue in detail..."
+                      />
+                   </div>
+                   <div className="flex gap-4 pt-4">
+                      <button type="button" onClick={() => setTicketMode(false)} className="flex-1 p-5 rounded-full border border-zinc-200 text-zinc-500 font-bold uppercase text-[10px] tracking-widest hover:bg-zinc-50 transition-colors">
+                         Cancel
+                      </button>
+                      <button type="submit" className="flex-[2] p-5 rounded-full bg-[#06331e] text-white font-bold uppercase text-[10px] tracking-widest shadow-xl hover:bg-emerald-900 transition-colors">
+                         Submit Ticket
+                      </button>
+                   </div>
+               </form>
+           </motion.div>
        )}
+       </AnimatePresence>
     </div>
   );
 };

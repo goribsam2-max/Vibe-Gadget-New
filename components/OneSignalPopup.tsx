@@ -8,7 +8,7 @@ const OneSignalPopup: React.FC = () => {
     // Show popup if user is logged in and hasn't seen it in this session
     const checkStatus = () => {
       const isLogged = !!auth.currentUser;
-      const alreadyShown = sessionStorage.getItem('vibe_notif_prompt_shown');
+      const alreadyShown = localStorage.getItem('vibe_notif_prompt_shown');
       
       if (isLogged && !alreadyShown) {
         // Delay slightly for better UX
@@ -24,7 +24,7 @@ const OneSignalPopup: React.FC = () => {
   }, []);
 
   const handleAllow = () => {
-    sessionStorage.setItem('vibe_notif_prompt_shown', 'true');
+    localStorage.setItem('vibe_notif_prompt_shown', 'true');
     setShow(false);
     
     // Trigger OneSignal SDK
@@ -35,7 +35,7 @@ const OneSignalPopup: React.FC = () => {
   };
 
   const handleCancel = () => {
-    sessionStorage.setItem('vibe_notif_prompt_shown', 'true');
+    localStorage.setItem('vibe_notif_prompt_shown', 'true');
     setShow(false);
   };
 

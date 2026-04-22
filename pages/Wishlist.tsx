@@ -67,7 +67,7 @@ const Wishlist: React.FC = () => {
           </div>
           <h2 className="text-xl font-bold mb-3 tracking-tight text-[#06331e]">Sign In Required</h2>
           <p className="text-sm text-zinc-400 mb-10 max-w-xs mx-auto">Please login to view and manage your saved tech essentials.</p>
-          <button onClick={() => navigate('/auth-selector')} className="btn-primary bg-[#06331e] px-12 text-[10px] uppercase tracking-[0.2em] font-bold shadow-xl shadow-[#06331e]/20">Sign In Now</button>
+          <button onClick={() => navigate('/auth-selector')} className="btn-primary bg-[#06331e] px-12 text-[10px] uppercase tracking-widest font-bold shadow-xl shadow-[#06331e]/20">Sign In Now</button>
         </div>
       ) : items.length === 0 ? (
         <motion.div 
@@ -78,8 +78,8 @@ const Wishlist: React.FC = () => {
           <div className="w-24 h-24 bg-zinc-50 rounded-full flex items-center justify-center mb-8 border border-zinc-100 shadow-sm">
             <i className="fas fa-heart text-3xl text-[#06331e]/20"></i>
           </div>
-          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.4em]">Nothing saved yet</p>
-          <button onClick={() => navigate('/')} className="mt-10 btn-primary bg-[#06331e] px-12 text-[10px] uppercase tracking-[0.2em] font-bold shadow-xl shadow-[#06331e]/20">Start Exploring</button>
+          <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Nothing saved yet</p>
+          <button onClick={() => navigate('/')} className="mt-10 btn-primary bg-[#06331e] px-12 text-[10px] uppercase tracking-widest font-bold shadow-xl shadow-[#06331e]/20">Start Exploring</button>
         </motion.div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-10">

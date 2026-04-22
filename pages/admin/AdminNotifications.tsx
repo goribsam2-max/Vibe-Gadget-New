@@ -22,8 +22,9 @@ const AdminNotifications: React.FC = () => {
         title,
         message,
         image: imageUrl || null,
+        userId: 'all', // Ensures it's delivered to all users via system notification page
         type: 'global',
-        readStatus: {}, // empty object representing unread by everyone
+        readStatus: {}, 
         createdAt: Date.now()
       });
 

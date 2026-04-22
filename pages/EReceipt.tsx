@@ -147,14 +147,14 @@ const EReceipt: React.FC = () => {
               body * { visibility: hidden; }
               #receipt-area, #receipt-area * { visibility: visible; }
               #receipt-area {
-                position: fixed;
+                position: absolute;
                 left: 0;
                 top: 0;
                 width: 100%;
                 margin: 0;
                 padding: 40px;
                 background: white !important;
-                border: 1px solid #eee !important;
+                border: none !important;
               }
               .print\\:hidden { display: none !important; }
             }

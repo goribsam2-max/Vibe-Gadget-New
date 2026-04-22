@@ -22,6 +22,8 @@ export interface Product {
   rating: number;
   numReviews?: number;
   featured?: boolean;
+  isOffer?: boolean;
+  offerPrice?: number;
 }
 
 export interface UserProfile {
@@ -67,6 +69,10 @@ export interface Order {
   customerName: string;
   trackingId?: string;
   ipAddress?: string; // Captured at checkout
+  riderNumber?: string;
+  courierName?: string;
+  isSuspicious?: boolean;
+  riskReason?: string;
 }
 
 export interface Banner {

@@ -89,8 +89,14 @@ const TrackOrder: React.FC = () => {
           <h1 className="text-2xl font-black tracking-tight uppercase text-zinc-900">Track Order</h1>
        </div>
 
-       <div className="bg-zinc-50 rounded-[2.5rem] p-10 flex flex-col items-center text-center border border-zinc-100 mb-12 shadow-sm">
-          <div className="mb-6"><StatusIcon status={order.status} /></div>
+       <div className="bg-zinc-50 rounded-[2.5rem] p-10 flex flex-col items-center text-center border border-zinc-100 mb-12 shadow-sm relative overflow-hidden">
+          {order.status === OrderStatus.ON_THE_WAY && (order.riderNumber || order.courierName) && (
+            <div className="absolute top-0 left-0 right-0 bg-emerald-500 text-white py-2 px-4 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest shadow-md">
+               <span><i className="fas fa-motorcycle mr-2"></i>{order.courierName || 'Courier'}</span>
+               {order.riderNumber && <a href={`tel:${order.riderNumber}`} className="bg-white text-emerald-600 px-3 py-1 rounded-full"><i className="fas fa-phone-alt mr-2 hover:animate-pulse"></i>{order.riderNumber}</a>}
+            </div>
+          )}
+          <div className="mb-6 mt-4"><StatusIcon status={order.status} /></div>
           <h2 className="text-xl font-black mb-2 tracking-tight uppercase text-zinc-900">{order.status}</h2>
           <div className="flex items-center space-x-3 bg-white px-5 py-2.5 rounded-2xl border border-zinc-100 mt-4">
              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Tracking ID:</span>

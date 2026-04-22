@@ -74,9 +74,9 @@ const Cart: React.FC = () => {
              </AnimatePresence>
            </div>
 
-           <div className="lg:col-span-4">
+            <div className="lg:col-span-4">
              <div className="bg-[#06331e] text-white p-8 md:p-10 rounded-[2.5rem] shadow-2xl sticky top-12 border border-[#0a4a2b]">
-                <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-emerald-500/50 mb-8">Order Summary</h3>
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/50 mb-8">Order Summary</h3>
                 <div className="space-y-5">
                    <div className="flex justify-between text-[10px] font-bold text-emerald-100/60 uppercase tracking-widest">
                       <span>Subtotal</span>
@@ -88,11 +88,11 @@ const Cart: React.FC = () => {
                    </div>
                    <div className="h-px bg-emerald-500/20 my-6"></div>
                    <div className="flex justify-between items-end">
-                      <span className="text-[11px] font-bold uppercase text-emerald-500/50 tracking-[0.2em]">Total Amount</span>
+                      <span className="text-[11px] font-bold uppercase text-emerald-500/50 tracking-widest">Total Amount</span>
                       <span className="text-4xl font-black tracking-tighter">৳{total + 150}</span>
                    </div>
                 </div>
-                <button onClick={() => navigate('/checkout')} className="w-full mt-10 py-5 bg-emerald-500 text-[#06331e] rounded-[1.5rem] font-bold text-[11px] uppercase tracking-[0.2em] shadow-lg hover:bg-emerald-400 hover:scale-[1.02] active:scale-95 transition-all">
+                <button onClick={() => navigate('/checkout')} className="w-full mt-10 py-5 bg-emerald-500 text-[#06331e] rounded-full font-bold text-[11px] uppercase tracking-widest shadow-lg hover:bg-emerald-400 active:scale-95 transition-all">
                   Checkout Now
                 </button>
              </div>
