@@ -5,6 +5,7 @@ import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { motion } from 'framer-motion';
 import { useNotify } from '../../components/Notifications';
+import Icon from '../../components/Icon';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const AdminDashboard: React.FC = () => {
     <div className="max-w-6xl mx-auto px-6 py-10 pb-32 min-h-screen bg-zinc-50/50">
       <div className="flex items-center justify-between mb-12">
         <div className="flex items-center space-x-6">
-          <button onClick={() => navigate('/')} className="w-12 h-12 flex items-center justify-center bg-white border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><i className="fas fa-arrow-left text-xs"></i></button>
+          <button onClick={() => navigate('/')} className="w-12 h-12 flex items-center justify-center bg-white border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><Icon name="arrow-left" className="text-xs" /></button>
           <div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-zinc-900 mb-1">Command Center</h1>
             <p className="text-zinc-400 text-[10px] md:text-xs font-bold tracking-widest uppercase">Admin Overview</p>
@@ -79,14 +80,14 @@ const AdminDashboard: React.FC = () => {
          <div className="flex items-center justify-between mb-6 px-1">
             <h3 className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">Recent Activity</h3>
             <Link to="orders" className="text-[10px] font-bold text-[#06331e] uppercase tracking-widest hover:text-emerald-600 transition-colors flex items-center">
-               View All <i className="fas fa-arrow-right ml-1.5 text-[8px]"></i>
+               View All <Icon name="arrow-right" className="ml-1.5 text-[8px]" />
             </Link>
          </div>
          <div className="bg-white rounded-3xl border border-zinc-200 overflow-hidden shadow-sm">
             {recentOrders.map((order, i) => (
                <div key={order.id} className={`flex items-center justify-between p-6 ${i !== recentOrders.length - 1 ? 'border-b border-zinc-100' : ''} hover:bg-zinc-50 transition-colors cursor-pointer group`} onClick={() => navigate(`orders`)}>
                   <div className="flex items-center space-x-5">
-                     <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-white group-hover:border-zinc-200 shadow-sm transition-colors group-hover:shadow-md"><i className="fas fa-shopping-bag text-zinc-500 text-sm"></i></div>
+                     <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-white group-hover:border-zinc-200 shadow-sm transition-colors group-hover:shadow-md"><Icon name="shopping-bag" className="text-zinc-500 text-sm" /></div>
                      <div>
                        <p className="text-sm font-black text-zinc-900 mb-0.5 tracking-tight group-hover:text-[#06331e] transition-colors">{order.customerName}</p>
                        <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Order #{order.id.slice(0,8)}</p>
@@ -100,7 +101,7 @@ const AdminDashboard: React.FC = () => {
             ))}
             {recentOrders.length === 0 && (
                <div className="p-12 text-center flex flex-col items-center justify-center text-zinc-400">
-                   <div className="w-16 h-16 rounded-full bg-zinc-50 border border-zinc-100 flex items-center justify-center mb-4"><i className="fas fa-inbox text-xl text-zinc-300"></i></div>
+                   <div className="w-16 h-16 rounded-full bg-zinc-50 border border-zinc-100 flex items-center justify-center mb-4"><Icon name="inbox" className="text-xl text-zinc-300" /></div>
                    <div className="font-bold text-xs uppercase tracking-widest">No recent orders</div>
                </div>
             )}
@@ -112,7 +113,7 @@ const AdminDashboard: React.FC = () => {
 
 const StatCard = ({ title, value, icon, color }: any) => (
   <div className="bg-white p-6 rounded-[2rem] border border-zinc-200 shadow-sm flex items-center space-x-4">
-    <div className={`w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center border border-zinc-100 ${color}`}><i className={`${icon} text-lg`}></i></div>
+    <div className={`w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center border border-zinc-100 ${color}`}><Icon name={icon.replace(/fa[sbrl]? fa-/, '').replace('-alt', '')} className="text-lg" /></div>
     <div>
       <p className="text-2xl font-black text-zinc-900 leading-none mb-1">{value}</p>
       <p className="text-[9px] text-zinc-400 font-bold tracking-widest uppercase">{title}</p>
@@ -123,7 +124,7 @@ const StatCard = ({ title, value, icon, color }: any) => (
 const AdminBentoLink = ({ to, title, subtitle, icon, highlight, iconColor, onClick }: any) => (
   <Link to={to} onClick={onClick} className={`bg-white p-6 rounded-3xl border ${highlight || 'border-zinc-200 hover:border-zinc-300'} shadow-sm hover:shadow-md transition-all group flex items-start space-x-4`}>
      <div className={`w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-white transition-colors shrink-0 ${iconColor || 'text-zinc-500 group-hover:text-black'}`}>
-        <i className={`${icon} text-lg transition-transform group-hover:scale-110`}></i>
+        <Icon name={icon.replace(/fa[sbrl]? fa-/, '').replace('-alt', '')} className="text-lg transition-transform group-hover:scale-110" />
      </div>
      <div>
         <h4 className={`text-sm font-bold mb-1 ${iconColor ? iconColor : 'text-zinc-900'}`}>{title}</h4>

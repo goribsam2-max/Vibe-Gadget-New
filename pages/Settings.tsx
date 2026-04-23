@@ -5,6 +5,7 @@ import { deleteUser } from 'firebase/auth';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { useNotify } from '../components/Notifications';
 import { motion } from 'framer-motion';
+import Icon from '../components/Icon';
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ const Settings: React.FC = () => {
     <div className="p-6 md:p-12 pb-48 animate-fade-in min-h-screen bg-white max-w-3xl mx-auto font-inter">
        <div className="flex items-center space-x-6 mb-12">
           <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-             <i className="fas fa-chevron-left text-xs"></i>
+             <Icon name="chevron-left" className="text-xs" />
           </button>
           <div>
             <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#06331e] mb-1.5">Settings</h1>
@@ -84,7 +85,7 @@ const Settings: React.FC = () => {
        <div className="space-y-4">
           <div className="w-full flex items-center justify-between p-4 px-6 bg-zinc-50 border border-zinc-100 rounded-full hover:shadow-sm transition-all">
              <div className="flex items-center space-x-4">
-                <i className="fas fa-bell w-5 text-center text-zinc-400"></i>
+                <Icon name="bell" className="w-5 text-center text-zinc-400" />
                 <div className="flex flex-col">
                   <span className="font-bold text-sm uppercase tracking-widest text-[#06331e]">Push Notifications</span>
                   <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">{pushEnabled ? 'Enabled' : 'Disabled'}</span>
@@ -105,10 +106,10 @@ const Settings: React.FC = () => {
                className={`w-full flex items-center justify-between p-4 px-6 bg-zinc-50 border rounded-full hover:shadow-sm transition-all group ${opt.danger ? 'border-red-100 hover:border-red-500 hover:bg-red-50 text-red-500' : 'border-zinc-100 hover:border-[#06331e]/30 hover:bg-white text-zinc-600'}`}
             >
                <div className="flex items-center space-x-4">
-                  <i className={`${opt.icon} w-5 text-center transition-colors ${opt.danger ? 'text-red-400 group-hover:text-red-500' : 'text-zinc-400 group-hover:text-[#06331e]'}`}></i>
+                  <Icon name={opt.icon} className={`w-5 text-center transition-colors ${opt.danger ? 'text-red-400 group-hover:text-red-500' : 'text-zinc-400 group-hover:text-[#06331e]'}`} />
                   <span className={`font-bold text-sm uppercase tracking-widest transition-colors ${opt.danger ? 'group-hover:text-red-600' : 'group-hover:text-[#06331e]'}`}>{opt.label}</span>
                </div>
-               <i className={`fas fa-chevron-right text-[10px] transition-colors ${opt.danger ? 'text-red-300 group-hover:text-red-500' : 'text-zinc-300 group-hover:text-[#06331e]'}`}></i>
+               <Icon name="chevron-right" className={`text-[10px] transition-colors ${opt.danger ? 'text-red-300 group-hover:text-red-500' : 'text-zinc-300 group-hover:text-[#06331e]'}`} />
             </button>
           ))}
        </div>
@@ -117,7 +118,7 @@ const Settings: React.FC = () => {
           <div className="fixed inset-0 bg-[#06331e]/60 backdrop-blur-sm z-[1000] flex items-center justify-center p-8 animate-fade-in">
              <div className="bg-white rounded-[40px] p-8 w-full shadow-2xl border border-white/20">
                 <div className="w-16 h-16 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                   <i className="fas fa-exclamation-triangle text-2xl"></i>
+                   <Icon name="exclamation-triangle" className="text-2xl" />
                 </div>
                 <h3 className="text-xl font-bold text-center mb-2">Wait, are you sure?</h3>
                 <p className="text-xs text-f-gray text-center font-medium leading-relaxed mb-8 px-4">

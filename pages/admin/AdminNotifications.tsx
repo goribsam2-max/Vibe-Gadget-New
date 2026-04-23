@@ -3,6 +3,7 @@ import { db } from '../../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useNotify } from '../../components/Notifications';
 import { useNavigate } from 'react-router-dom';
+import Icon from '../../components/Icon';
 
 const AdminNotifications: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -72,7 +73,7 @@ const AdminNotifications: React.FC = () => {
     <div className="max-w-4xl mx-auto px-6 py-10 pb-32 min-h-screen bg-zinc-50/30">
         <div className="flex items-center space-x-6 mb-12">
             <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-white border border-zinc-200 text-zinc-900 rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-                <i className="fas fa-chevron-left text-xs"></i>
+                <Icon name="chevron-left" className="text-xs" />
             </button>
             <h1 className="text-3xl font-black tracking-tighter text-[#06331e]">Push Notifications</h1>
         </div>
@@ -80,7 +81,7 @@ const AdminNotifications: React.FC = () => {
         <div className="bg-white p-8 md:p-10 rounded-[2rem] border border-zinc-100 shadow-sm max-w-2xl mx-auto">
             <div className="flex items-center space-x-4 mb-8">
                 <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center border border-emerald-100">
-                    <i className="fas fa-satellite-dish text-emerald-500 text-xl"></i>
+                    <Icon name="satellite-dish" className="text-emerald-500 text-xl" />
                 </div>
                 <div>
                     <h2 className="text-xl font-bold tracking-tight text-[#06331e]">Broadcast Alert</h2>
@@ -128,7 +129,7 @@ const AdminNotifications: React.FC = () => {
                 </div>
                 <div className="pt-4">
                     <button disabled={loading} type="submit" className="w-full py-4 bg-[#06331e] text-white rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-[#06331e]/20 hover:bg-[#0a4a2b] transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-3">
-                        <i className="fas fa-paper-plane"></i>
+                        <Icon name="paper-plane" />
                         <span>{loading ? "Sending..." : "Send Broadcast Now"}</span>
                     </button>
                 </div>

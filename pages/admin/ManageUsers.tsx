@@ -6,6 +6,7 @@ import { UserProfile } from '../../types';
 import { useNotify } from '../../components/Notifications';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import Icon from '../../components/Icon';
 
 const ManageUsers: React.FC = () => {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const ManageUsers: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
         <div className="flex items-center space-x-6">
            <button onClick={() => navigate('/admin')} className="p-4 bg-zinc-900 text-white rounded-2xl shadow-xl active:scale-90 transition-all">
-             <i className="fas fa-chevron-left text-xs"></i>
+             <Icon name="chevron-left" className="text-xs" />
            </button>
            <div>
               <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-zinc-900">User List</h1>
@@ -53,7 +54,7 @@ const ManageUsers: React.FC = () => {
              value={search}
              onChange={e => setSearch(e.target.value)}
            />
-           <i className="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-zinc-300"></i>
+           <Icon name="search" className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-300" />
         </div>
       </div>
 
@@ -98,7 +99,7 @@ const ManageUsers: React.FC = () => {
                   onClick={() => toggleBan(user.uid, user.isBanned)}
                   className={`p-4 rounded-2xl shadow-md active:scale-95 transition-all ${user.isBanned ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}
                 >
-                  <i className={`fas ${user.isBanned ? 'fa-unlock' : 'fa-user-slash'} text-xs`}></i>
+                  <Icon name={user.isBanned ? 'unlock' : 'user-slash'} className="text-xs" />
                 </button>
              </div>
           </motion.div>

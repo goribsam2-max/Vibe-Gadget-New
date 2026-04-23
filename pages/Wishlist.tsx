@@ -5,6 +5,7 @@ import { collection, onSnapshot, query, orderBy, doc, deleteDoc } from 'firebase
 import { auth, db } from '../firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotify } from '../components/Notifications';
+import Icon from '../components/Icon';
 
 const Wishlist: React.FC = () => {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ const Wishlist: React.FC = () => {
     <div className="px-6 md:px-12 py-10 pb-48 bg-white max-w-7xl mx-auto min-h-screen">
       <div className="flex items-center space-x-6 mb-12">
         <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-zinc-50 rounded-full shadow-sm border border-zinc-100 hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-          <i className="fas fa-chevron-left text-xs"></i>
+          <Icon name="chevron-left" className="text-xs" />
         </button>
         <div className="flex flex-col">
            <h1 className="text-2xl md:text-4xl font-black tracking-tight text-[#06331e] uppercase leading-none">Saved.</h1>
@@ -63,7 +64,7 @@ const Wishlist: React.FC = () => {
       {!auth.currentUser ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="w-24 h-24 bg-zinc-50 rounded-full flex items-center justify-center mb-8 border border-zinc-100 shadow-sm">
-            <i className="fas fa-lock text-3xl text-[#06331e]/20"></i>
+            <Icon name="lock" className="text-3xl text-[#06331e]/20" />
           </div>
           <h2 className="text-xl font-bold mb-3 tracking-tight text-[#06331e]">Sign In Required</h2>
           <p className="text-sm text-zinc-400 mb-10 max-w-xs mx-auto">Please login to view and manage your saved tech essentials.</p>
@@ -76,7 +77,7 @@ const Wishlist: React.FC = () => {
           className="flex flex-col items-center justify-center py-32 text-center"
         >
           <div className="w-24 h-24 bg-zinc-50 rounded-full flex items-center justify-center mb-8 border border-zinc-100 shadow-sm">
-            <i className="fas fa-heart text-3xl text-[#06331e]/20"></i>
+            <Icon name="heart" className="text-3xl text-[#06331e]/20" />
           </div>
           <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Nothing saved yet</p>
           <button onClick={() => navigate('/')} className="mt-10 btn-primary bg-[#06331e] px-12 text-[10px] uppercase tracking-widest font-bold shadow-xl shadow-[#06331e]/20">Start Exploring</button>
@@ -94,13 +95,13 @@ const Wishlist: React.FC = () => {
                 onClick={() => navigate(`/product/${item.productId}`)}
                 className="group cursor-pointer relative"
               >
-                <div className="aspect-[3/4] bg-zinc-50/30 rounded-3xl mb-4 overflow-hidden relative shadow-sm border border-zinc-100 group-hover:shadow-xl hover:-translate-y-2 group-hover:border-emerald-500/20 transition-all duration-300">
-                  <img src={item.image} className="w-full h-full object-contain p-8 transition-transform group-hover:scale-110 duration-500 mix-blend-multiply" alt={item.name} />
+                <div className="aspect-[4/5] flex items-center justify-center bg-zinc-50/30 rounded-3xl mb-4 overflow-hidden relative shadow-sm border border-zinc-100 group-hover:shadow-xl hover:-translate-y-2 group-hover:border-emerald-500/20 transition-all duration-300">
+                  <img src={item.image} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500 mix-blend-multiply" alt={item.name} />
                   <button 
                     onClick={(e) => removeFromWishlist(item.id, e)}
                     className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-white/90 backdrop-blur text-red-500 rounded-full shadow-md hover:bg-red-500 hover:text-white active:scale-90 transition-all z-10"
                   >
-                    <i className="fas fa-trash-alt text-xs"></i>
+                    <Icon name="trash-alt" className="text-xs" />
                   </button>
                 </div>
                 <div className="px-2">

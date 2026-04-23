@@ -4,6 +4,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc, query, orderBy } from 'fir
 import { db } from '../../firebase';
 import { useNotify } from '../../components/Notifications';
 import { motion } from 'framer-motion';
+import Icon from '../../components/Icon';
 
 const ManageCoupons: React.FC = () => {
   const navigate = useNavigate();
@@ -55,7 +56,6 @@ const ManageCoupons: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if(!window.confirm("Delete this coupon?")) return;
     try {
       await deleteDoc(doc(db, 'coupons', id));
       notify("Coupon removed", "success");
@@ -70,7 +70,7 @@ const ManageCoupons: React.FC = () => {
        <div className="flex items-center justify-between mb-12">
           <div className="flex items-center space-x-6">
              <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-white border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-                <i className="fas fa-arrow-left text-xs"></i>
+                <Icon name="arrow-left" className="text-xs" />
              </button>
              <div>
                 <h1 className="text-2xl md:text-3xl font-black tracking-tight text-zinc-900 mb-1">Coupons & Promos</h1>
@@ -78,7 +78,7 @@ const ManageCoupons: React.FC = () => {
              </div>
           </div>
           <button onClick={() => setShowAddForm(!showAddForm)} className="bg-[#06331e] text-white px-6 py-3 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-emerald-900 transition-colors shadow-lg">
-             <i className={`fas ${showAddForm ? 'fa-times' : 'fa-plus'} mr-2`}></i> {showAddForm ? 'Cancel' : 'New Coupon'}
+             <Icon name={showAddForm ? 'times' : 'plus'} className="mr-2" /> {showAddForm ? 'Cancel' : 'New Coupon'}
           </button>
        </div>
 
@@ -112,7 +112,7 @@ const ManageCoupons: React.FC = () => {
        )}
 
        {loading ? (
-         <div className="py-20 text-center"><i className="fas fa-spinner fa-spin text-emerald-500 text-3xl"></i></div>
+         <div className="py-20 text-center"><Icon name="spinner" className="fa-spin text-emerald-500 text-3xl" /></div>
        ) : (
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {coupons.map(coupon => (
@@ -120,10 +120,10 @@ const ManageCoupons: React.FC = () => {
                  <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 to-emerald-600"></div>
                  <div className="flex justify-between items-start mb-6 mt-2">
                     <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-lg font-black tracking-widest border border-emerald-100 flex items-center">
-                       <i className="fas fa-ticket-alt mr-2"></i> {coupon.code}
+                       <Icon name="ticket-alt" className="mr-2" /> {coupon.code}
                     </div>
                     <button onClick={() => handleDelete(coupon.id)} className="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center">
-                       <i className="fas fa-trash text-xs"></i>
+                       <Icon name="trash" className="text-xs" />
                     </button>
                  </div>
                  
@@ -141,7 +141,7 @@ const ManageCoupons: React.FC = () => {
             ))}
             {coupons.length === 0 && (
                <div className="col-span-full py-20 text-center bg-white rounded-3xl border border-zinc-200 shadow-sm text-zinc-400">
-                  <i className="fas fa-ticket-alt text-4xl mb-4 text-zinc-300"></i>
+                  <Icon name="ticket-alt" className="text-4xl mb-4 text-zinc-300" />
                   <p className="font-bold text-xs uppercase tracking-widest">No active coupons</p>
                </div>
             )}

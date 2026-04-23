@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { uploadToImgbb } from '../../services/imgbb';
 import { useNotify, useConfirm } from '../../components/Notifications';
+import Icon from '../../components/Icon';
 
 interface Banner {
   id: string;
@@ -20,6 +21,8 @@ const ManageBanners: React.FC = () => {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [uploading, setUploading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [featuredCategory, setFeaturedCategory] = useState('');
+  const [savingSettings, setSavingSettings] = useState(false);
   const notify = useNotify();
   const confirm = useConfirm();
 
@@ -36,7 +39,26 @@ const ManageBanners: React.FC = () => {
     setBanners(snap.docs.map(d => ({ id: d.id, ...d.data() } as Banner)));
   };
 
-  useEffect(() => { fetchBanners(); }, []);
+  const fetchSettings = async () => {
+    const snap = await getDoc(doc(db, 'settings', 'platform'));
+    if (snap.exists()) {
+       setFeaturedCategory(snap.data().featuredCategory || '');
+    }
+  };
+
+  useEffect(() => { fetchBanners(); fetchSettings(); }, []);
+
+  const saveSettings = async () => {
+    setSavingSettings(true);
+    try {
+       await setDoc(doc(db, 'settings', 'platform'), { featuredCategory }, { merge: true });
+       notify("Homepage showcase category updated", "success");
+    } catch(err) {
+       notify("Failed to save settings", "error");
+    } finally {
+       setSavingSettings(false);
+    }
+  };
 
   const handleEdit = (banner: Banner) => {
     setEditingId(banner.id);
@@ -96,7 +118,7 @@ const ManageBanners: React.FC = () => {
     <div className="max-w-7xl mx-auto px-6 py-10 bg-white min-h-screen pb-32">
       <div className="flex items-center justify-between mb-12">
         <div className="flex items-center space-x-6">
-          <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><i className="fas fa-chevron-left text-xs"></i></button>
+          <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><Icon name="chevron-left" className="text-xs" /></button>
           <div>
              <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#06331e] mb-1.5">Store Banners</h1>
              <p className="text-zinc-400 text-[10px] md:text-xs font-bold tracking-widest uppercase">Homepage Visuals</p>
@@ -166,6 +188,31 @@ const ManageBanners: React.FC = () => {
               </button>
             )}
           </form>
+
+          <div className="bg-white p-10 rounded-[2.5rem] border border-zinc-100 mt-8 shadow-sm">
+             <h2 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-6">Home Slider Category</h2>
+             <p className="text-[10px] font-bold text-zinc-500 mb-6 leading-relaxed">Select a category to display in the auto-slider below the header search bar on the homepage.</p>
+             <div className="flex flex-col space-y-4">
+                <select 
+                  value={featuredCategory} 
+                  onChange={e => setFeaturedCategory(e.target.value)}
+                  className="w-full bg-zinc-50 p-5 rounded-2xl outline-none focus:ring-1 focus:ring-black transition-all font-bold shadow-inner uppercase tracking-widest text-xs"
+                >
+                   <option value="">-- No Slider --</option>
+                   <option value="Mobile">Mobile</option>
+                   <option value="Accessories">Accessories</option>
+                   <option value="Gadgets">Gadgets</option>
+                   <option value="Chargers">Chargers</option>
+                </select>
+                <button 
+                  onClick={saveSettings} 
+                  disabled={savingSettings}
+                  className="w-full bg-[#06331e] text-white shadow-sm disabled:opacity-50 text-[10px] font-bold uppercase tracking-widest py-4 rounded-full transition-all hover:bg-emerald-900"
+                >
+                  {savingSettings ? "Saving..." : "Update Category"}
+                </button>
+             </div>
+          </div>
         </div>
 
         <div className="lg:col-span-2">
@@ -175,8 +222,8 @@ const ManageBanners: React.FC = () => {
                 <div className="h-56 relative">
                   <img src={banner.imageUrl} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-1000" alt="" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-4">
-                     <button onClick={() => handleEdit(banner)} className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform"><i className="fas fa-pen text-black"></i></button>
-                     <button onClick={() => handleDelete(banner.id)} className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform"><i className="fas fa-trash text-white"></i></button>
+                     <button onClick={() => handleEdit(banner)} className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:scale-110 transition-transform"><Icon name="pen" className="text-black" /></button>
+                     <button onClick={() => handleDelete(banner.id)} className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform"><Icon name="trash" className="text-white" /></button>
                   </div>
                 </div>
                 <div className="p-8">

@@ -5,6 +5,7 @@ import { Order, OrderStatus } from '../../types';
 import { useNavigate } from 'react-router-dom';
 import { useNotify } from '../../components/Notifications';
 import { motion } from 'framer-motion';
+import Icon from '../../components/Icon';
 
 const ManageFakeOrders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -53,7 +54,7 @@ const ManageFakeOrders: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-6 py-10 pb-32 min-h-screen bg-white">
       <div className="flex items-center space-x-6 mb-12">
-        <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-red-50 border border-red-100 text-red-500 rounded-full shadow-sm hover:bg-red-500 hover:text-white transition-all active:scale-95"><i className="fas fa-chevron-left text-xs"></i></button>
+        <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-red-50 border border-red-100 text-red-500 rounded-full shadow-sm hover:bg-red-500 hover:text-white transition-all active:scale-95"><Icon name="chevron-left" className="text-xs" /></button>
         <div>
            <h1 className="text-xl md:text-2xl font-black tracking-tight text-red-600 mb-1.5">Risk Review</h1>
            <p className="text-zinc-500 text-[10px] md:text-xs font-bold tracking-widest uppercase">Auto-detected Fake/Suspicious Orders</p>
@@ -65,7 +66,7 @@ const ManageFakeOrders: React.FC = () => {
       ) : orders.length === 0 ? (
         <div className="text-center py-20">
             <div className="w-20 h-20 bg-emerald-50 rounded-full mx-auto flex items-center justify-center mb-6">
-                <i className="fas fa-shield-check text-2xl text-emerald-500"></i>
+                <Icon name="shield-check" className="text-2xl text-emerald-500" />
             </div>
             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">No suspicious orders detected.</p>
         </div>
@@ -79,7 +80,7 @@ const ManageFakeOrders: React.FC = () => {
                    
                    <div className="mb-6 mt-2">
                        <h3 className="text-sm font-black text-red-600 uppercase tracking-widest">{order.customerName}</h3>
-                       <p className="text-[10px] font-bold text-red-400 mt-1 uppercase max-w-sm leading-relaxed"><i className="fas fa-exclamation-triangle mr-2"></i>{order.riskReason}</p>
+                       <p className="text-[10px] font-bold text-red-400 mt-1 uppercase max-w-sm leading-relaxed"><Icon name="exclamation-triangle" className="mr-2" />{order.riskReason}</p>
                    </div>
 
                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 pt-6 border-t border-red-100/50">

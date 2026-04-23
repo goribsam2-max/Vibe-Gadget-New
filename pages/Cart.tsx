@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import Icon from '../components/Icon';
 
 const Cart: React.FC = () => {
   const [items, setItems] = useState<any[]>([]);
@@ -31,7 +32,7 @@ const Cart: React.FC = () => {
     <div className="p-6 md:p-12 pb-48 animate-fade-in bg-white max-w-7xl mx-auto min-h-screen">
        <div className="flex items-center space-x-6 mb-12">
           <button onClick={() => navigate(-1)} className="p-3.5 bg-zinc-50 rounded-2xl border border-zinc-100 shadow-sm hover:bg-black hover:text-white transition-all">
-             <i className="fas fa-chevron-left text-xs"></i>
+             <Icon name="chevron-left" className="text-xs" />
           </button>
           <h1 className="text-3xl font-black tracking-tighter uppercase">Shopping Cart.</h1>
        </div>
@@ -39,7 +40,7 @@ const Cart: React.FC = () => {
        {items.length === 0 ? (
          <div className="flex flex-col items-center justify-center py-32 text-center">
             <div className="w-24 h-24 bg-zinc-50 rounded-[2.5rem] flex items-center justify-center mb-8 border border-zinc-100">
-                <i className="fas fa-shopping-cart text-3xl text-zinc-300"></i>
+                <Icon name="shopping-cart" className="text-3xl text-zinc-300" />
             </div>
             <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Your cart is empty</p>
             <button onClick={() => navigate('/')} className="mt-10 btn-primary px-12 text-[10px] uppercase tracking-widest shadow-xl shadow-zinc-200">Start Shopping</button>
@@ -57,7 +58,7 @@ const Cart: React.FC = () => {
                        <div className="flex justify-between items-start mb-2">
                           <h4 className="font-bold text-sm md:text-lg truncate pr-4 tracking-tight text-zinc-900">{item.name}</h4>
                           <button onClick={() => removeItem(idx)} className="text-zinc-300 hover:text-red-500 transition-colors p-2">
-                             <i className="fas fa-trash text-xs"></i>
+                             <Icon name="trash" className="text-xs" />
                           </button>
                        </div>
                        <div className="flex justify-between items-center mt-4 md:mt-6">

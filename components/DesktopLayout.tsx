@@ -3,6 +3,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
+import Icon from './Icon';
 
 const DesktopLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -34,13 +35,13 @@ const DesktopLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   };
 
   const menuLinks = [
-    { to: '/', icon: 'fas fa-home', label: 'Home' },
-    { to: '/search', icon: 'fas fa-search', label: 'Search' },
-    { to: '/all-products', icon: 'fas fa-box', label: 'Catalog' },
-    { to: '/wishlist', icon: 'fas fa-heart', label: 'Saved' },
-    { to: '/orders', icon: 'fas fa-shopping-bag', label: 'My Orders' },
-    { to: '/notifications', icon: 'fas fa-bell', label: 'Alerts' },
-    { to: '/profile', icon: 'fas fa-user', label: 'Profile' }
+    { to: '/', icon: 'home', label: 'Home' },
+    { to: '/search', icon: 'search', label: 'Search' },
+    { to: '/all-products', icon: 'box', label: 'Catalog' },
+    { to: '/wishlist', icon: 'heart', label: 'Saved' },
+    { to: '/orders', icon: 'shopping-bag', label: 'My Orders' },
+    { to: '/notifications', icon: 'bell', label: 'Alerts' },
+    { to: '/profile', icon: 'user', label: 'Profile' }
   ];
 
   return (
@@ -61,7 +62,7 @@ const DesktopLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 to={link.to}
                 className={`flex items-center space-x-4 px-4 py-3 rounded-2xl transition-all font-bold text-sm tracking-tight ${isActive ? 'bg-[#06331e] text-white shadow-md' : 'text-zinc-500 hover:text-[#06331e] hover:bg-zinc-50'}`}
               >
-                <i className={`${link.icon} w-5 text-center`}></i>
+                <Icon name={link.icon} className="text-xl w-5 text-center" />
                 <span>{link.label}</span>
               </NavLink>
             );
@@ -71,12 +72,12 @@ const DesktopLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <div className="mt-8 border-t border-zinc-100 pt-6">
            {auth.currentUser ? (
               <button onClick={handleLogout} className="flex items-center space-x-4 px-4 py-3 rounded-2xl text-red-500 hover:bg-red-50 w-full font-bold text-sm transition-colors">
-                <i className="fas fa-sign-out-alt w-5 text-center"></i>
+                <Icon name="sign-out-alt" className="text-xl w-5 text-center" />
                 <span>Log out</span>
               </button>
            ) : (
               <button onClick={() => navigate('/signin')} className="flex items-center justify-center space-x-2 px-4 py-3 rounded-full bg-[#06331e] text-white w-full font-bold text-xs uppercase tracking-widest hover:bg-black transition-colors shadow-lg">
-                <i className="fas fa-lock"></i>
+                <Icon name="lock" className="text-xl" />
                 <span>Sign in</span>
               </button>
            )}

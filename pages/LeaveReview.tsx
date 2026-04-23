@@ -6,6 +6,7 @@ import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useNotify } from '../components/Notifications';
 import { Product } from '../types';
 import { uploadToImgbb } from '../services/imgbb';
+import Icon from '../components/Icon';
 
 const LeaveReview: React.FC = () => {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ const LeaveReview: React.FC = () => {
     <div className="p-8 animate-fade-in min-h-screen flex flex-col max-w-md mx-auto bg-white">
        <div className="flex items-center space-x-6 mb-12">
           <button onClick={() => navigate(-1)} className="p-3.5 bg-zinc-50 rounded-2xl active:scale-90 transition-all shadow-sm">
-             <i className="fas fa-chevron-left text-sm"></i>
+             <Icon name="chevron-left" className="text-sm" />
           </button>
           <h1 className="text-2xl font-black tracking-tight">Write Review</h1>
        </div>
@@ -102,7 +103,7 @@ const LeaveReview: React.FC = () => {
                   key={star} onClick={() => setRating(star)} 
                   className={`text-3xl transition-all ${star <= rating ? 'text-yellow-400 scale-110' : 'text-zinc-200'}`}
                 >
-                  <i className={`${star <= rating ? 'fas' : 'far'} fa-star`}></i>
+                  <Icon name={star <= rating ? 'star' : 'star-outline'} />
                 </button>
              ))}
           </div>

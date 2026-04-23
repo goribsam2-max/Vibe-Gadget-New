@@ -2,14 +2,15 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import Icon from './Icon';
 
 const BottomNav: React.FC = () => {
   const location = useLocation();
   const links = [
-    { to: '/', icon: 'fas fa-home', label: 'Home' },
-    { to: '/wishlist', icon: 'fas fa-heart', label: 'Saved' },
-    { to: '/cart', icon: 'fas fa-shopping-bag', label: 'Cart' },
-    { to: '/profile', icon: 'fas fa-user', label: 'Profile' }
+    { to: '/', icon: 'home', label: 'Home' },
+    { to: '/wishlist', icon: 'heart', label: 'Saved' },
+    { to: '/cart', icon: 'shopping-bag', label: 'Cart' },
+    { to: '/profile', icon: 'user', label: 'Profile' }
   ];
 
   return (
@@ -35,7 +36,7 @@ const BottomNav: React.FC = () => {
                   transition={{ type: "spring", bounce: 0.1, duration: 0.5 }}
                 />
               )}
-              <i className={`${link.icon} text-lg relative z-10 transition-transform ${isActive ? 'scale-100' : 'hover:scale-110'}`}></i>
+              <Icon name={link.icon} className={`text-xl relative z-10 transition-transform ${isActive ? 'scale-100' : 'hover:scale-110'}`} />
             </NavLink>
           );
         })}

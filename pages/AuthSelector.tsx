@@ -86,8 +86,10 @@ const AuthSelector: React.FC = () => {
   return (
     <div className="h-screen flex flex-col p-10 items-center justify-center text-center bg-zinc-50/30 max-w-md mx-auto font-inter">
       <div className="flex-1 flex flex-col items-center justify-center w-full">
-        <Logo scale={1.3} centerOrigin={true} className="mb-6" />
-        <p className="text-zinc-500 text-sm font-medium mb-12 px-4 leading-relaxed">
+        <div className="flex justify-center w-full mb-8">
+           <Logo scale={1.3} centerOrigin={true} />
+        </div>
+        <p className="text-zinc-500 text-sm font-medium mb-10 px-4 leading-relaxed">
           Premium mobile accessories and gadgets delivered right to your doorstep in Bangladesh.
         </p>
         
@@ -129,7 +131,7 @@ const SocialBtn = ({ icon, active, onClick, color }: any) => (
     onClick={onClick} 
     className={`w-14 h-14 rounded-full flex items-center justify-center transition-all border ${active ? `bg-white border-zinc-200 ${color} shadow-sm hover:bg-zinc-50` : 'bg-zinc-50 border-transparent text-zinc-300 cursor-not-allowed'}`}
   >
-      <i className={`${icon} text-lg`}></i>
+      <Icon name={icon.replace(/fa[sbrl]? fa-/, '')} className="text-lg" />
   </motion.button>
 );
 

@@ -5,6 +5,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { useNotify } from '../components/Notifications';
 import { motion, AnimatePresence } from 'framer-motion';
+import Icon from '../components/Icon';
 
 const HelpCenter: React.FC = () => {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ const HelpCenter: React.FC = () => {
     <div className="p-6 md:p-12 pb-48 animate-fade-in bg-white max-w-3xl mx-auto min-h-screen font-inter">
        <div className="flex items-center space-x-6 mb-12">
           <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-             <i className="fas fa-chevron-left text-xs"></i>
+             <Icon name="chevron-left" className="text-xs" />
           </button>
           <div>
             <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#06331e] mb-1.5">{ticketMode ? 'Submit Ticket' : 'Support Desk'}</h1>
@@ -90,7 +91,7 @@ const HelpCenter: React.FC = () => {
                        <div key={i} className="border border-zinc-100 rounded-3xl overflow-hidden transition-all bg-zinc-50/50 shadow-sm hover:border-zinc-200 hover:bg-white group cursor-pointer" onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}>
                           <button className="w-full p-6 flex justify-between items-center text-left">
                             <span className="text-xs font-bold text-zinc-800 pr-8 leading-relaxed tracking-tight group-hover:text-[#06331e] transition-colors">{faq.q}</span>
-                            <i className={`fas fa-chevron-down text-[10px] text-zinc-300 transition-transform duration-300 ${expandedFaq === i ? 'rotate-180 text-[#06331e]' : ''}`}></i>
+                            <Icon name="chevron-down" className={`text-[10px] text-zinc-300 transition-transform duration-300 ${expandedFaq === i ? 'rotate-180 text-[#06331e]' : ''}`} />
                           </button>
                           <div className={`px-6 transition-all duration-300 overflow-hidden ${expandedFaq === i ? 'pb-6 max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
                             <p className="text-[11px] text-zinc-500 leading-relaxed font-medium">{faq.a}</p>
@@ -107,10 +108,10 @@ const HelpCenter: React.FC = () => {
                           className="w-full p-4 px-6 bg-zinc-50 border border-zinc-100 rounded-full hover:shadow-sm hover:bg-white hover:border-zinc-200 text-zinc-600 transition-all flex items-center justify-between group cursor-pointer active:scale-95"
                        >
                           <div className="flex items-center space-x-4">
-                             <i className={`${opt.icon} w-6 text-center text-zinc-400 group-hover:text-emerald-500 transition-colors`}></i>
+                             <Icon name={opt.icon} className="w-6 text-center text-zinc-400 group-hover:text-emerald-500 transition-colors" />
                              <span className="font-bold text-sm uppercase tracking-widest text-zinc-700 group-hover:text-[#06331e] transition-colors">{opt.label}</span>
                           </div>
-                          <i className="fas fa-chevron-right text-[10px] text-zinc-300 group-hover:text-[#06331e] transition-colors"></i>
+                          <Icon name="chevron-right" className="text-[10px] text-zinc-300 group-hover:text-[#06331e] transition-colors" />
                        </button>
                     ))}
                     <div className="h-4"></div>
@@ -118,7 +119,7 @@ const HelpCenter: React.FC = () => {
                        onClick={() => setTicketMode(true)}
                        className="w-full p-6 bg-[#06331e] rounded-3xl text-white font-bold uppercase tracking-widest text-xs flex flex-col items-center justify-center hover:bg-emerald-900 transition-colors shadow-lg shadow-[#06331e]/20"
                     >
-                       <i className="fas fa-ticket-alt text-2xl mb-3 text-emerald-400"></i>
+                       <Icon name="ticket-alt" className="text-2xl mb-3 text-emerald-400" />
                        Open Support Ticket
                        <span className="text-[9px] font-normal opacity-70 mt-1 capitalize tracking-normal">Our team will respond within 24 hours</span>
                     </button>

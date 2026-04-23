@@ -1,15 +1,19 @@
 
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Order } from '../types';
+import Icon from '../components/Icon';
 
 const EReceipt: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -27,8 +31,29 @@ const EReceipt: React.FC = () => {
     return () => unsubscribe();
   }, [id]);
 
-  const handleDownload = () => {
-    window.print();
+  const handleDownload = async () => {
+    setDownloading(true);
+    const receiptElement = document.getElementById('receipt-area');
+    if (!receiptElement) {
+        setDownloading(false);
+        return;
+    }
+
+    try {
+      const canvas = await html2canvas(receiptElement, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`VibeGadget_Invoice_${order?.id?.slice(0,8)}.pdf`);
+    } catch (err) {
+      console.error('Download error:', err);
+    } finally {
+      setDownloading(false);
+    }
   };
 
   if (loading) return (
@@ -50,7 +75,7 @@ const EReceipt: React.FC = () => {
     <div className="p-6 pb-24 animate-fade-in min-h-screen bg-white max-w-md mx-auto print:p-0">
        <div className="flex items-center space-x-6 mb-10 print:hidden">
           <button onClick={() => navigate(-1)} className="p-3 bg-zinc-50 rounded-2xl active:scale-90 transition-transform border border-zinc-100 shadow-sm">
-             <i className="fas fa-arrow-left text-sm"></i>
+             <Icon name="arrow-left" className="text-sm" />
           </button>
           <h1 className="text-xl font-black tracking-tight">E-Receipt</h1>
        </div>
@@ -58,7 +83,7 @@ const EReceipt: React.FC = () => {
        <div id="receipt-area" className="bg-zinc-50 rounded-[3rem] border border-zinc-100 p-8 shadow-sm flex flex-col relative overflow-hidden print:border-0 print:bg-white print:shadow-none print:rounded-none">
           <div className="mb-10 w-full flex flex-col items-center">
              <div className="w-14 h-14 bg-black rounded-2xl flex items-center justify-center mb-6 shadow-xl">
-                <i className="fas fa-shopping-bag text-white text-xl"></i>
+                <Icon name="shopping-bag" className="text-white text-xl" />
              </div>
              <h2 className="text-2xl font-black tracking-tight mb-1 text-zinc-900">VibeGadget</h2>
              <p className="text-[9px] text-zinc-400 font-bold tracking-[0.2em] uppercase">Official Invoice</p>
@@ -135,10 +160,15 @@ const EReceipt: React.FC = () => {
 
        <button 
           onClick={handleDownload}
-          className="w-full mt-10 py-5 bg-black text-white rounded-2xl flex items-center justify-center space-x-3 text-[10px] font-black uppercase tracking-widest print:hidden shadow-lg active:scale-[0.98] transition-all"
+          disabled={downloading}
+          className="w-full mt-10 py-5 bg-black text-white rounded-2xl flex items-center justify-center space-x-3 text-[10px] font-black uppercase tracking-widest print:hidden shadow-lg active:scale-[0.98] transition-all disabled:opacity-50"
        >
-          <i className="fas fa-print"></i>
-          <span>Download Invoice</span>
+          {downloading ? (
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          ) : (
+            <Icon name="print" />
+          )}
+          <span>{downloading ? 'Generating PDF...' : 'Download Invoice'}</span>
        </button>
 
        <style>

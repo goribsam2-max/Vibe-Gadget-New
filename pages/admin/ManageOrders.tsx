@@ -6,6 +6,7 @@ import { collection, onSnapshot, query, orderBy, doc, updateDoc } from 'firebase
 import { Order, OrderStatus } from '../../types';
 import { useNotify } from '../../components/Notifications';
 import { motion } from 'framer-motion';
+import Icon from '../../components/Icon';
 
 const ManageOrders: React.FC = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ const ManageOrders: React.FC = () => {
   return (
     <div className="max-w-[1440px] mx-auto px-6 py-10 pb-32 min-h-screen bg-white">
       <div className="flex items-center space-x-6 mb-12">
-        <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><i className="fas fa-chevron-left text-xs"></i></button>
+        <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><Icon name="chevron-left" className="text-xs" /></button>
         <div>
            <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#06331e] mb-1.5">Orders Overview</h1>
            <p className="text-zinc-400 text-[10px] md:text-xs font-bold tracking-widest uppercase">Manual Logistics Management</p>

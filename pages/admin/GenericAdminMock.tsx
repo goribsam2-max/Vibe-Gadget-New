@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { collection, getDocs, doc, setDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useNotify } from '../../components/Notifications';
+import Icon from '../../components/Icon';
 
 const GenericAdminMock: React.FC = () => {
     const navigate = useNavigate();
@@ -101,7 +102,7 @@ const GenericAdminMock: React.FC = () => {
         <div className="max-w-6xl mx-auto px-6 py-10 pb-32 min-h-screen bg-zinc-50/50">
             <div className="flex items-center space-x-6 mb-12">
                 <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-white border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-                    <i className="fas fa-arrow-left text-xs"></i>
+                    <Icon name="arrow-left" className="text-xs" />
                 </button>
                 <div>
                     <h1 className="text-2xl md:text-3xl font-black tracking-tight text-zinc-900 mb-1">{pageTitle}</h1>
@@ -119,14 +120,14 @@ const GenericAdminMock: React.FC = () => {
                           </button>
                        ) : (
                           <button onClick={handleCreateDummy} className="bg-[#06331e] text-white px-6 py-2.5 rounded-full text-xs font-bold tracking-widest uppercase hover:bg-emerald-900 transition-colors shadow-md">
-                             <i className="fas fa-plus mr-2"></i> Add Record
+                             <Icon name="plus" className="mr-2" /> Add Record
                           </button>
                        )}
                     </div>
                 </div>
                 
                 {loading ? (
-                    <div className="py-20 text-center"><i className="fas fa-spinner fa-spin text-emerald-500 text-2xl"></i></div>
+                    <div className="py-20 text-center"><Icon name="spinner" className="fa-spin text-emerald-500 text-2xl" /></div>
                 ) : (
                    <div className="overflow-x-auto">
                       {data.length > 0 ? (
@@ -152,7 +153,7 @@ const GenericAdminMock: React.FC = () => {
                          </table>
                       ) : (
                          <div className="py-16 text-center text-zinc-400">
-                            <i className="fas fa-database text-4xl mb-4 text-zinc-200"></i>
+                            <Icon name="database" className="text-4xl mb-4 text-zinc-200" />
                             <p className="font-bold text-xs uppercase tracking-widest">No data entries found.</p>
                          </div>
                       )}

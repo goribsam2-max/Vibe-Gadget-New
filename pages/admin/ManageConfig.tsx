@@ -5,6 +5,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useNotify } from '../../components/Notifications';
 import { motion, AnimatePresence } from 'framer-motion';
+import Icon from '../../components/Icon';
 
 const ManageConfig: React.FC = () => {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ const ManageConfig: React.FC = () => {
     <div className="max-w-4xl mx-auto px-6 py-10 pb-48 min-h-screen bg-white font-inter">
       <div className="mb-12 flex items-center space-x-6">
         <button onClick={() => navigate('/admin')} className="p-3 bg-zinc-100 rounded-xl hover:bg-black hover:text-white transition-all">
-          <i className="fas fa-arrow-left text-sm"></i>
+          <Icon name="arrow-left" className="text-sm" />
         </button>
         <div>
           <h1 className="text-2xl font-black tracking-tight">App Settings</h1>
@@ -176,10 +177,10 @@ const AccordionSection = ({ title, icon, children, expanded, onToggle }: any) =>
   <div className="border border-zinc-100 rounded-2xl overflow-hidden bg-white">
     <button onClick={onToggle} className="w-full px-6 py-5 flex items-center justify-between hover:bg-zinc-50 transition-colors">
       <div className="flex items-center space-x-4">
-        <i className={`${icon} text-zinc-400 w-5`}></i>
+        <Icon name={icon.replace(/fa[sbrl]? fa-/, '').replace('-alt', '')} className="text-zinc-400 w-5" />
         <span className="text-sm font-bold">{title}</span>
       </div>
-      <i className={`fas fa-chevron-down text-[10px] transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}></i>
+      <Icon name="chevron-down" className={`text-[10px] transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`} />
     </button>
     <AnimatePresence>
       {expanded && (

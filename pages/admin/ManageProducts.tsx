@@ -7,6 +7,7 @@ import { uploadToImgbb } from '../../services/imgbb';
 import { useNotify, useConfirm } from '../../components/Notifications';
 import { Product } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
+import Icon from '../../components/Icon';
 
 const ManageProducts: React.FC = () => {
   const navigate = useNavigate();
@@ -115,7 +116,7 @@ const ManageProducts: React.FC = () => {
     <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-10 pb-32 min-h-screen bg-white">
       <div className="flex items-center justify-between mb-12">
         <div className="flex items-center space-x-6">
-          <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><i className="fas fa-chevron-left text-xs"></i></button>
+          <button onClick={() => navigate('/admin')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95"><Icon name="chevron-left" className="text-xs" /></button>
           <div>
              <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#06331e] mb-1.5">Products Inventory</h1>
              <p className="text-zinc-400 text-[10px] md:text-xs font-bold tracking-widest uppercase">Catalog Management</p>
@@ -236,36 +237,40 @@ const ManageProducts: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+      <div className="flex flex-col space-y-3">
         {products.map(p => (
           <motion.div 
             layout
             key={p.id} 
-            className="bg-white rounded-2xl p-4 flex flex-col relative group border border-zinc-100 shadow-sm transition-all hover:shadow-md hover:border-zinc-200"
+            className="bg-white rounded-full p-2 pr-6 flex items-center justify-between border border-zinc-100 shadow-sm transition-all hover:shadow-md hover:border-zinc-200 group"
           >
-             <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-zinc-50 p-4 border border-zinc-100/50 flex items-center justify-center">
-                <img src={p.image} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500" alt="" />
-             </div>
-             <div className="px-1">
-                <h4 className="font-bold text-xs truncate mb-1 text-zinc-900">{p.name}</h4>
-                <div className="flex justify-between items-center mb-1">
-                   <p className="text-sm font-black text-black">৳{p.price}</p>
-                   <p className="text-[9px] font-medium text-zinc-400 uppercase tracking-widest">Qty: {p.stock}</p>
-                </div>
+             <div className="flex items-center space-x-4">
+               <div className="w-14 h-14 rounded-full overflow-hidden bg-zinc-50 border border-zinc-100 flex items-center justify-center shrink-0">
+                  <img src={p.image} className="w-full h-full object-contain p-1 mix-blend-multiply" alt={p.name} />
+               </div>
+               <div className="flex flex-col justify-center">
+                  <h4 className="font-bold text-[13px] text-zinc-900 tracking-tight max-w-[200px] md:max-w-xs truncate">{p.name}</h4>
+                  <div className="flex items-center space-x-3 mt-1">
+                     <p className="text-xs font-black text-emerald-600">৳{p.isOffer && p.offerPrice ? p.offerPrice : p.price}</p>
+                     <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest"><span className="text-zinc-500">{p.stock}</span> in stock</p>
+                     <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest flex items-center"><Icon name="eye" className="mr-1" /> {p.views || 0}</p>
+                     {p.isOffer && <span className="px-2 py-0.5 bg-red-100 text-red-600 rounded text-[8px] font-black uppercase tracking-widest">Offer</span>}
+                  </div>
+               </div>
              </div>
              
-             <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center space-y-3 opacity-0 group-hover:opacity-100 transition-all rounded-2xl border border-zinc-200">
-                <button onClick={() => handleEdit(p)} className="w-12 h-12 bg-white border border-zinc-200 rounded-full flex items-center justify-center text-zinc-700 hover:text-black hover:bg-zinc-50 transition-all shadow-sm">
-                   <i className="fas fa-pen text-sm"></i>
+             <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onClick={() => handleEdit(p)} className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-full flex items-center justify-center text-zinc-600 hover:text-black hover:bg-zinc-100 transition-all shadow-sm">
+                   <Icon name="pen" className="text-xs" />
                 </button>
-                <button onClick={() => handleDelete(p.id)} className="w-12 h-12 bg-red-50 border border-red-100 rounded-full flex items-center justify-center text-red-500 hover:bg-red-100 transition-all shadow-sm">
-                   <i className="fas fa-trash text-sm"></i>
+                <button onClick={() => handleDelete(p.id)} className="w-10 h-10 bg-red-50 border border-red-100 rounded-full flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm">
+                   <Icon name="trash" className="text-xs" />
                 </button>
              </div>
           </motion.div>
         ))}
         {products.length === 0 && (
-           <div className="col-span-full py-40 text-center text-zinc-400 font-bold uppercase tracking-[0.2em] text-[11px]">Store inventory empty</div>
+           <div className="py-32 text-center text-zinc-400 font-bold uppercase tracking-[0.2em] text-[11px] bg-white rounded-3xl border border-zinc-100 shadow-sm">Inventory is empty</div>
         )}
       </div>
     </div>

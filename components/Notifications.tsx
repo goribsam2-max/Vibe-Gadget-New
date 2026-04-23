@@ -65,7 +65,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 toast.type === 'error' ? 'bg-red-50' : 
                 'bg-zinc-50'
               }`}>
-                <i className={`fas ${toast.type === 'success' ? 'fa-check' : toast.type === 'error' ? 'fa-exclamation' : 'fa-info'} text-[7px]`}></i>
+                <Icon name={toast.type === 'success' ? 'check' : toast.type === 'error' ? 'exclamation' : 'info'} className="text-[7px]" />
               </div>
               <p className="font-bold text-[10px] tracking-tight leading-tight">{toast.message}</p>
             </motion.div>

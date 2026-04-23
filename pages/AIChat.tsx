@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
 import { useNotify } from '../components/Notifications';
 import { motion, AnimatePresence } from 'framer-motion';
+import Icon from '../components/Icon';
 
 interface GenAIBlob { data: string; mimeType: string; }
 
@@ -193,7 +194,7 @@ const AIChat: React.FC = () => {
             onClick={() => navigate(-1)} 
             className="p-3 bg-zinc-900 text-white rounded-2xl shadow-lg"
           >
-            <i className="fas fa-chevron-left text-xs"></i>
+            <Icon name="chevron-left" className="text-xs" />
           </motion.button>
           <div className="flex flex-col">
             <h2 className="font-black text-xs uppercase tracking-widest">Vibe AI Assistant</h2>
@@ -226,7 +227,7 @@ const AIChat: React.FC = () => {
                 transition={{ repeat: Infinity, duration: 4 }}
                 className="w-48 h-48 rounded-[60px] border border-white/10 flex items-center justify-center glass-dark shadow-2xl"
             >
-                <i className="fas fa-microphone text-4xl text-white"></i>
+                <Icon name="microphone" className="text-4xl text-white" />
             </motion.div>
             <h3 className="text-white text-xs font-black mt-12 uppercase tracking-widest animate-pulse">I am listening...</h3>
             <button onClick={stopLiveSession} className="mt-16 px-12 py-4 bg-white text-zinc-900 rounded-full font-black text-[10px] tracking-widest uppercase shadow-2xl">End Voice Call</button>
@@ -247,7 +248,7 @@ const AIChat: React.FC = () => {
                 <div className={`max-w-[85%] px-6 py-4 rounded-[2rem] text-sm font-medium shadow-sm leading-relaxed ${msg.role === 'user' ? 'bg-zinc-900 text-white rounded-tr-none' : 'glass text-zinc-900 rounded-tl-none border border-zinc-100'}`}>
                   {msg.isThinking && msg.role === 'bot' && (
                     <div className="flex items-center space-x-2 mb-2 opacity-40 text-[8px] font-black uppercase tracking-widest">
-                      <i className="fas fa-lightbulb"></i>
+                      <Icon name="lightbulb" />
                       <span>AI Reasoning</span>
                     </div>
                   )}
@@ -272,8 +273,8 @@ const AIChat: React.FC = () => {
       <div className="p-6 md:p-10 bg-white border-t border-zinc-100">
         <div className="flex items-end space-x-4 max-w-4xl mx-auto">
           <div className="flex space-x-2">
-            <motion.button whileTap={{ scale: 0.9 }} onClick={startLiveSession} className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm ${isLiveMode ? 'bg-red-500 text-white' : 'bg-zinc-50 text-zinc-400'}`}><i className="fas fa-phone-alt"></i></motion.button>
-            <motion.button whileTap={{ scale: 0.9 }} onClick={isRecording ? stopRecording : startRecording} className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm ${isRecording ? 'bg-red-500 text-white animate-pulse' : 'bg-zinc-50 text-zinc-400'}`}><i className={`fas ${isRecording ? 'fa-stop' : 'fa-microphone'}`}></i></motion.button>
+            <motion.button whileTap={{ scale: 0.9 }} onClick={startLiveSession} className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm ${isLiveMode ? 'bg-red-500 text-white' : 'bg-zinc-50 text-zinc-400'}`}><Icon name="phone-alt" /></motion.button>
+            <motion.button whileTap={{ scale: 0.9 }} onClick={isRecording ? stopRecording : startRecording} className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm ${isRecording ? 'bg-red-500 text-white animate-pulse' : 'bg-zinc-50 text-zinc-400'}`}><Icon name={isRecording ? 'stop' : 'microphone'} /></motion.button>
           </div>
           <div className="flex-1 flex flex-col space-y-3">
             <div className="flex items-center bg-zinc-50 rounded-[2rem] p-1.5 border border-zinc-100 shadow-inner">
@@ -283,7 +284,7 @@ const AIChat: React.FC = () => {
                   onClick={handleSendMessage} 
                   className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all ${input.trim() ? 'bg-zinc-900 text-white' : 'bg-zinc-200 text-zinc-400'}`}
                 >
-                  <i className="fas fa-arrow-up text-xs"></i>
+                  <Icon name="arrow-up" className="text-xs" />
                 </motion.button>
             </div>
           </div>

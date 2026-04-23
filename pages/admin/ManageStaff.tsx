@@ -4,6 +4,7 @@ import { collection, getDocs, doc, setDoc, deleteDoc, updateDoc } from 'firebase
 import { db } from '../../firebase';
 import { useNotify } from '../../components/Notifications';
 import { motion } from 'framer-motion';
+import Icon from '../../components/Icon';
 
 const ManageStaff: React.FC = () => {
     const navigate = useNavigate();
@@ -76,7 +77,6 @@ const ManageStaff: React.FC = () => {
     };
 
     const handleRemoveStaff = async (id: string) => {
-        if(!window.confirm("Remove this staff member?")) return;
         try {
             await deleteDoc(doc(db, 'staff', id));
             notify("Staff member removed", "success");
@@ -91,7 +91,7 @@ const ManageStaff: React.FC = () => {
             <div className="flex items-center justify-between mb-12">
                 <div className="flex items-center space-x-6">
                     <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-white border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-                        <i className="fas fa-arrow-left text-xs"></i>
+                        <Icon name="arrow-left" className="text-xs" />
                     </button>
                     <div>
                         <h1 className="text-2xl md:text-3xl font-black tracking-tight text-zinc-900 mb-1">Staff Roles</h1>
@@ -99,7 +99,7 @@ const ManageStaff: React.FC = () => {
                     </div>
                 </div>
                 <button onClick={() => setShowAdd(!showAdd)} className="bg-[#06331e] text-white px-6 py-3 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-emerald-900 transition-colors shadow-lg">
-                    <i className={`fas ${showAdd ? 'fa-times' : 'fa-plus'} mr-2`}></i> {showAdd ? 'Cancel' : 'Add Staff'}
+                    <Icon name={showAdd ? 'times' : 'plus'} className="mr-2" /> {showAdd ? 'Cancel' : 'Add Staff'}
                 </button>
             </div>
 
@@ -128,13 +128,13 @@ const ManageStaff: React.FC = () => {
                                    className={`p-3 rounded-xl border flex items-center space-x-3 cursor-pointer transition-all ${form.permissions.includes(mod.id) ? 'bg-emerald-50 border-emerald-200 shadow-sm' : 'bg-zinc-50 border-zinc-200 hover:border-zinc-300'}`}
                                 >
                                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${form.permissions.includes(mod.id) ? 'bg-emerald-500 border-emerald-600 text-white' : 'bg-white border-zinc-300'}`}>
-                                      {form.permissions.includes(mod.id) && <i className="fas fa-check text-[8px]"></i>}
+                                      {form.permissions.includes(mod.id) && <Icon name="check" className="text-[8px]" />}
                                    </div>
                                    <span className={`text-xs font-bold ${form.permissions.includes(mod.id) ? 'text-emerald-900' : 'text-zinc-600'}`}>{mod.name}</span>
                                 </div>
                              ))}
                           </div>
-                          {form.permissions.length === 0 && <p className="text-[10px] text-red-500 font-bold mt-2"><i className="fas fa-exclamation-triangle mr-1"></i> Select at least one module</p>}
+                          {form.permissions.length === 0 && <p className="text-[10px] text-red-500 font-bold mt-2"><Icon name="exclamation-triangle" className="mr-1" /> Select at least one module</p>}
                        </div>
 
                        <div className="flex justify-end">
@@ -153,7 +153,7 @@ const ManageStaff: React.FC = () => {
                     <div>
                         <div className="flex items-center space-x-3 mb-6">
                            <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
-                              <i className="fas fa-crown text-emerald-400 text-sm"></i>
+                              <Icon name="crown" className="text-emerald-400 text-sm" />
                            </div>
                            <div>
                               <h3 className="font-black text-lg tracking-tight">Super Admin</h3>
@@ -173,7 +173,7 @@ const ManageStaff: React.FC = () => {
                           <div className="flex justify-between items-start mb-6">
                               <div className="flex items-center space-x-3">
                                   <div className="w-10 h-10 bg-zinc-100 rounded-full flex items-center justify-center border border-zinc-200 text-zinc-500">
-                                      <i className="fas fa-user-shield text-sm"></i>
+                                      <Icon name="user-shield" className="text-sm" />
                                   </div>
                                   <div>
                                       <h3 className="font-bold text-zinc-900 truncate">{member.roleName}</h3>
@@ -181,7 +181,7 @@ const ManageStaff: React.FC = () => {
                                   </div>
                               </div>
                               <button onClick={() => handleRemoveStaff(member.id)} className="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center">
-                                  <i className="fas fa-trash text-xs"></i>
+                                  <Icon name="trash" className="text-xs" />
                               </button>
                           </div>
                           

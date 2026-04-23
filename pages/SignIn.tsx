@@ -6,6 +6,7 @@ import { auth, db } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useNotify } from '../components/Notifications';
 import { motion } from 'framer-motion';
+import Icon from '../components/Icon';
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -43,7 +44,7 @@ const SignIn: React.FC = () => {
           onClick={() => navigate(-1)} 
           className="w-10 h-10 bg-white border border-zinc-200 rounded-full flex items-center justify-center mb-8 shadow-sm hover:bg-zinc-50 transition-all text-zinc-600"
         >
-          <i className="fas fa-arrow-left text-xs"></i>
+          <Icon name="arrow-left" className="text-xs" />
         </motion.button>
         <h1 className="text-3xl font-black tracking-tight text-zinc-900">Sign in</h1>
         <p className="mt-2 text-sm text-zinc-500 font-medium">Welcome back! Please enter your details.</p>

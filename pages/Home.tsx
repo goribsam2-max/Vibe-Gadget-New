@@ -1,17 +1,20 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Product } from '../types';
 import { Link, useNavigate } from 'react-router-dom';
 import { getReadableAddress } from '../services/location';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import Logo from '../components/Logo';
+import Icon from '../components/Icon';
 
 const Home: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [banners, setBanners] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>({});
   const [activeBanner, setActiveBanner] = useState(0);
+  const [activeFeatured, setActiveFeatured] = useState(0);
   const [activeCategory, setActiveCategory] = useState('All');
   const [locationName, setLocationName] = useState('Locating...');
   const [quickViewImg, setQuickViewImg] = useState<string | null>(null);
@@ -49,13 +52,17 @@ const Home: React.FC = () => {
       console.warn("Banners fetch error:", err.message);
     });
 
+    const unsubscribeSettings = onSnapshot(doc(db, 'settings', 'platform'), (snap) => {
+      if (snap.exists()) setSettings(snap.data());
+    });
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (position) => {
         const address = await getReadableAddress(position.coords.latitude, position.coords.longitude);
         setLocationName(address);
       }, () => setLocationName('Dhaka, Bangladesh'));
     }
-    return () => { unsubscribeProds(); unsubscribeBanners(); };
+    return () => { unsubscribeProds(); unsubscribeBanners(); unsubscribeSettings(); };
   }, []);
 
   useEffect(() => {
@@ -64,6 +71,15 @@ const Home: React.FC = () => {
       return () => clearInterval(interval);
     }
   }, [banners]);
+
+  useEffect(() => {
+    if (!settings?.featuredCategory) return;
+    const featuredProds = products.filter(p => p.category.toLowerCase() === settings.featuredCategory.toLowerCase());
+    if (featuredProds.length > 1) {
+      const interval = setInterval(() => setActiveFeatured(prev => (prev + 1) % featuredProds.length), 4000);
+      return () => clearInterval(interval);
+    }
+  }, [products, settings?.featuredCategory]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -102,24 +118,92 @@ const Home: React.FC = () => {
         <div className="flex items-center space-x-3">
           <div className="hidden md:flex flex-col text-right mr-4">
             <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Delivering to</p>
-            <button className="flex items-center justify-end font-bold text-xs hover:text-[#06331e] transition-colors">
-              <i className="fas fa-map-marker-alt text-emerald-500 mr-2 text-[10px]"></i>
+            <button className="flex items-center justify-end font-bold text-xs hover:text-[#06331e] transition-colors whitespace-nowrap">
+              <Icon name="map-marker" className="text-emerald-500 mr-2 text-[10px]" />
               {locationName}
             </button>
           </div>
-          <button onClick={() => navigate('/notifications')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 rounded-full relative border border-zinc-100 active:scale-95 transition-transform hover:bg-[#06331e] hover:text-white shadow-sm group">
-            <i className="fas fa-bell text-sm"></i>
-            <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border border-white group-hover:border-[#06331e]"></span>
+          <button onClick={() => navigate('/notifications')} className="w-12 h-12 flex items-center justify-center bg-zinc-50 rounded-full relative border border-zinc-100 active:scale-95 transition-transform hover:bg-black hover:text-white shadow-sm group">
+            <Icon name="bell" className="text-sm" />
+            <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border border-white group-hover:border-black"></span>
           </button>
         </div>
       </motion.div>
+
+      {banners.length > 0 && (
+        <motion.div 
+          ref={bannerContainerRef}
+          className="relative mb-10 overflow-hidden rounded-[2rem] border border-zinc-50 shadow-sm z-10"
+        >
+          <div className="flex transition-transform duration-1000 ease-[cubic-bezier(0.23, 1, 0.32, 1)]" style={{ transform: `translateX(-${activeBanner * 100}%)` }}>
+            {banners.map((banner, i) => (
+              <div key={i} className="min-w-full bg-[#06331e] h-[120px] md:h-[160px] lg:h-[200px] relative overflow-hidden flex items-center">
+                 <motion.img 
+                  src={banner.imageUrl} 
+                  style={{ y: smoothY, scale: 1.2 }}
+                  className="absolute inset-0 w-full h-full object-cover origin-center opacity-60 mix-blend-overlay" 
+                  alt="" 
+                 />
+                 <div className="absolute inset-0 bg-gradient-to-r from-[#06331e]/80 via-[#06331e]/40 to-transparent"></div>
+                 <div className="relative z-10 p-6 md:p-14 max-w-lg">
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-black tracking-tight mb-1.5 md:mb-2 uppercase leading-[1.1] text-white truncate w-full">{banner.title}</h2>
+                    <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest opacity-80 mb-4 md:mb-6 text-emerald-100 truncate w-full">{banner.description}</p>
+                    <button onClick={() => banner.link && navigate(banner.link)} className="px-6 py-2.5 bg-white text-[#06331e] rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl hover:bg-emerald-50 transition-colors whitespace-nowrap">
+                      Shop Now
+                    </button>
+                 </div>
+              </div>
+            ))}
+          </div>
+          <div className="absolute bottom-4 right-6 flex space-x-2 z-20">
+             {banners.map((_, i) => (
+               <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${i === activeBanner ? 'w-8 bg-emerald-400' : 'w-2 bg-white/30'}`}></div>
+             ))}
+          </div>
+        </motion.div>
+      )}
+
+      {settings?.featuredCategory && products.filter(p => p.category.toLowerCase() === settings.featuredCategory.toLowerCase()).length > 0 && (
+        <div className="mb-10 md:mb-14">
+          <div className="relative w-full h-[160px] md:h-[200px] rounded-[2rem] overflow-hidden border border-zinc-100 shadow-sm bg-zinc-900 group">
+            <div className="flex transition-transform duration-1000 ease-[cubic-bezier(0.23, 1, 0.32, 1)] h-full" style={{ transform: `translateX(-${activeFeatured * 100}%)` }}>
+              {products.filter(p => p.category.toLowerCase() === settings.featuredCategory.toLowerCase()).map((product, i) => (
+                <div key={product.id} className="min-w-full h-full relative grid grid-cols-2 md:grid-cols-5 items-center">
+                   <div className="col-span-1 md:col-span-3 h-full relative bg-zinc-50 flex items-center justify-center p-6 overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-zinc-200/50 to-zinc-50 mix-blend-multiply"></div>
+                      <img src={product.image} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-[1.05] transition-transform duration-1000 relative z-10" alt={product.name} />
+                   </div>
+                   <div className="col-span-1 md:col-span-2 p-6 md:p-8 flex flex-col justify-center h-full bg-black text-white relative">
+                      <div className="absolute top-0 right-0 p-3 md:p-4">
+                        <span className="px-3 py-1 bg-white/10 text-white rounded-full text-[8px] font-black uppercase tracking-widest backdrop-blur-md whitespace-nowrap">Featured</span>
+                      </div>
+                      <h4 className="text-sm md:text-xl font-black mb-1.5 md:mb-2 tracking-tight truncate w-full pr-8">{product.name}</h4>
+                      <div className="flex items-center space-x-2 mb-4 md:mb-5 truncate w-full">
+                         <p className="text-lg md:text-2xl font-black text-emerald-400">৳{product.isOffer && product.offerPrice ? product.offerPrice : product.price}</p>
+                         {product.isOffer && <p className="text-[10px] md:text-xs text-zinc-500 font-bold line-through">৳{product.price}</p>}
+                      </div>
+                      <button onClick={() => navigate(`/product/${product.id}`)} className="px-5 md:px-6 py-2.5 md:py-3 bg-white text-black font-black uppercase tracking-[0.2em] text-[9px] md:text-[10px] rounded-full hover:bg-zinc-200 transition-colors self-start shadow-xl active:scale-95 flex items-center whitespace-nowrap">
+                        Shop Now <Icon name="arrow-right" className="ml-2 md:ml-3 text-[9px]" />
+                      </button>
+                   </div>
+                </div>
+              ))}
+            </div>
+            <div className="absolute bottom-4 left-6 md:left-auto md:right-6 flex space-x-1.5 z-20">
+              {products.filter(p => p.category.toLowerCase() === settings.featuredCategory.toLowerCase()).map((_, i) => (
+                <div key={i} className={`h-1.5 rounded-full transition-all duration-500 shadow-sm ${i === activeFeatured ? 'w-6 bg-emerald-400' : 'w-1.5 bg-white/30'}`}></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mb-10 md:mb-16">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-zinc-900 leading-[1.1] mb-2">Find your perfect <br/><span className="text-emerald-600">vibe gadget.</span></h1>
         
         <div ref={searchRef} className="relative w-full max-w-md mt-8 z-50">
           <div className={`relative flex items-center bg-zinc-50 rounded-2xl border transition-all ${isSearchFocused ? 'border-emerald-500 ring-2 ring-emerald-500/20 bg-white' : 'border-zinc-200'}`}>
-            <i className="fas fa-search absolute left-5 text-zinc-400"></i>
+            <Icon name="search" className="absolute left-5 text-zinc-400" />
             <input 
               type="text" 
               placeholder="Search for iPhones, AirPods, accessories..." 
@@ -174,39 +258,8 @@ const Home: React.FC = () => {
           </AnimatePresence>
         </div>
       </div>
-
-      {banners.length > 0 && (
-        <motion.div 
-          ref={bannerContainerRef}
-          className="relative mb-16 overflow-hidden rounded-[2rem] border border-zinc-50 shadow-sm z-10"
-        >
-          <div className="flex transition-transform duration-1000 ease-[cubic-bezier(0.23, 1, 0.32, 1)]" style={{ transform: `translateX(-${activeBanner * 100}%)` }}>
-            {banners.map((banner, i) => (
-              <div key={i} className="min-w-full bg-[#06331e] aspect-[16/9] md:aspect-[21/9] lg:aspect-[3/1] relative overflow-hidden flex items-center">
-                 <motion.img 
-                  src={banner.imageUrl} 
-                  style={{ y: smoothY, scale: 1.2 }}
-                  className="absolute inset-0 w-full h-full object-cover origin-center opacity-60 mix-blend-overlay" 
-                  alt="" 
-                 />
-                 <div className="absolute inset-0 bg-gradient-to-r from-[#06331e]/80 via-[#06331e]/40 to-transparent"></div>
-                 <div className="relative z-10 p-6 md:p-14 max-w-lg">
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight mb-2 uppercase leading-[1.1] text-white">{banner.title}</h2>
-                    <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest opacity-80 mb-6 text-emerald-100">{banner.description}</p>
-                    <button onClick={() => banner.link && navigate(banner.link)} className="px-6 py-2.5 bg-white text-[#06331e] rounded-full font-bold text-[10px] uppercase tracking-widest shadow-xl hover:bg-emerald-50 transition-colors">
-                      Explore Now
-                    </button>
-                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="absolute bottom-6 right-6 flex space-x-2 z-20">
-             {banners.map((_, i) => (
-               <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${i === activeBanner ? 'w-8 bg-emerald-400' : 'w-2 bg-white/30'}`}></div>
-             ))}
-          </div>
-        </motion.div>
-      )}
+      
+      {/* Search Output above */}
 
       {products.filter(p => p.isOffer).length > 0 && (
         <div className="mb-12">
@@ -215,7 +268,7 @@ const Home: React.FC = () => {
               <div className="relative z-10">
                  <div className="flex items-center space-x-3 mb-4">
                      <div className="w-6 h-6 bg-red-100 text-red-500 rounded-full flex items-center justify-center">
-                        <i className="fas fa-bolt text-[10px] animate-pulse"></i>
+                        <Icon name="bolt" className="text-[10px] animate-pulse" />
                      </div>
                      <div>
                         <h2 className="text-sm font-black tracking-tight text-red-950 uppercase">Limited Deals</h2>
@@ -231,11 +284,11 @@ const Home: React.FC = () => {
                        
                        return (
                          <div key={product.id} onClick={() => navigate(`/product/${productSlug}/${product.id}`)} className="flex-none w-[140px] md:w-[160px] bg-white rounded-2xl p-2.5 border border-red-100/50 shadow-sm hover:border-red-200 transition-colors cursor-pointer group hover:-translate-y-1">
-                            <div className="relative aspect-square mb-3 bg-zinc-50 rounded-xl flex items-center justify-center overflow-hidden border border-zinc-100 group-hover:border-zinc-200 transition-colors p-4">
+                            <div className="relative aspect-square mb-3 bg-zinc-50 rounded-xl flex items-center justify-center overflow-hidden border border-zinc-100 group-hover:border-zinc-200 transition-colors">
                                <img 
                                  src={product.image} 
                                  loading="lazy"
-                                 className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out" 
+                                 className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out" 
                                  alt={product.name}
                                  style={{ opacity: 0 }}
                                  onLoad={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transition = 'opacity 0.4s ease'; }}
@@ -265,19 +318,19 @@ const Home: React.FC = () => {
       {/* Added Feature Section */}
       <div className="flex overflow-x-auto no-scrollbar gap-3 mb-16 pb-2 px-2 mask-linear-fade">
          <div className="bg-zinc-50 rounded-full px-5 py-3 flex items-center shrink-0 border border-zinc-100 shadow-sm">
-            <i className="fas fa-shipping-fast text-emerald-600 mr-3 text-sm"></i>
+            <Icon name="truck-fast" className="text-emerald-600 mr-3 text-sm" />
             <span className="text-[11px] font-bold text-zinc-900 whitespace-nowrap">Fast Delivery Across BD</span>
          </div>
          <div className="bg-zinc-50 rounded-full px-5 py-3 flex items-center shrink-0 border border-zinc-100 shadow-sm">
-            <i className="fas fa-shield-alt text-emerald-600 mr-3 text-sm"></i>
+            <Icon name="shield-check" className="text-emerald-600 mr-3 text-sm" />
             <span className="text-[11px] font-bold text-zinc-900 whitespace-nowrap">100% Secure Payments</span>
          </div>
          <div className="bg-zinc-50 rounded-full px-5 py-3 flex items-center shrink-0 border border-zinc-100 shadow-sm">
-            <i className="fas fa-medal text-emerald-600 mr-3 text-sm"></i>
+            <Icon name="crown" className="text-emerald-600 mr-3 text-sm" />
             <span className="text-[11px] font-bold text-zinc-900 whitespace-nowrap">Top Quality Original Gadgets</span>
          </div>
          <div className="bg-zinc-50 rounded-full px-5 py-3 flex items-center shrink-0 border border-zinc-100 shadow-sm">
-            <i className="fas fa-headset text-emerald-600 mr-3 text-sm"></i>
+            <Icon name="headset" className="text-emerald-600 mr-3 text-sm" />
             <span className="text-[11px] font-bold text-zinc-900 whitespace-nowrap">24/7 Always Here Support</span>
          </div>
       </div>
@@ -300,7 +353,7 @@ const Home: React.FC = () => {
             <h2 className="text-2xl md:text-4xl font-black tracking-tight">New Arrivals.</h2>
           </div>
           <button onClick={() => navigate('/all-products')} className="text-[10px] font-bold uppercase tracking-widest text-[#06331e] hover:text-emerald-600 transition-colors flex items-center">
-            View All <i className="fas fa-arrow-right ml-2 text-[8px]"></i>
+            View All <Icon name="arrow-right" className="ml-2 text-[8px]" />
           </button>
         </div>
         
@@ -320,7 +373,7 @@ const Home: React.FC = () => {
                     <img 
                       src={product.image} 
                       loading="lazy"
-                      className="w-4/5 h-4/5 object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out p-4" 
+                      className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out" 
                       alt={product.name} 
                       style={{ opacity: 0 }}
                       onLoad={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transition = 'opacity 0.4s ease'; }}
@@ -337,7 +390,7 @@ const Home: React.FC = () => {
                   onClick={(e) => { e.preventDefault(); setQuickViewImg(product.image); }}
                   className="absolute top-4 left-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center hover:bg-[#06331e] hover:text-white shadow-lg border border-zinc-100/50"
                 >
-                   <i className="fas fa-expand-alt text-xs"></i>
+                   <Icon name="expand-alt" className="text-xs" />
                 </button>
                 
                 <div className="px-2 pb-1">
@@ -345,7 +398,7 @@ const Home: React.FC = () => {
                     <h4 className="font-bold text-xs md:text-sm truncate mb-1 tracking-tight group-hover:text-emerald-700 transition-colors uppercase">{product.name}</h4>
                   </Link>
                   <div className="flex items-center text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
-                    <i className="fas fa-star text-emerald-500 mr-1.5 text-[10px]"></i>{product.rating} • {product.category}
+                    <Icon name="star" className="text-emerald-500 mr-1.5 text-[10px]" />{product.rating} • {product.category}
                   </div>
                 </div>
               </div>
@@ -371,7 +424,7 @@ const Home: React.FC = () => {
               onClick={e => e.stopPropagation()}
             >
               <button onClick={() => setQuickViewImg(null)} className="absolute top-6 right-6 w-10 h-10 bg-zinc-50 rounded-full flex items-center justify-center hover:bg-[#06331e] hover:text-white transition-all">
-                 <i className="fas fa-times text-xs"></i>
+                 <Icon name="times" className="text-xs" />
               </button>
               <img src={quickViewImg} className="max-w-full max-h-full object-contain" alt="Preview" />
             </motion.div>

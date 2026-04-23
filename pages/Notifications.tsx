@@ -4,6 +4,7 @@ import { auth, db } from '../firebase';
 import { collection, query, where, onSnapshot, orderBy, doc, getDoc } from 'firebase/firestore';
 import { Notification, UserProfile } from '../types';
 import { useNavigate } from 'react-router-dom';
+import Icon from '../components/Icon';
 
 const NotificationsPage: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -52,7 +53,7 @@ const NotificationsPage: React.FC = () => {
     <div className="max-w-3xl mx-auto px-6 py-10 pb-32 min-h-screen bg-white font-inter">
       <div className="flex items-center space-x-6 mb-12">
         <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-          <i className="fas fa-chevron-left text-xs"></i>
+          <Icon name="chevron-left" className="text-xs" />
         </button>
         <div>
            <h1 className="text-xl md:text-2xl font-black tracking-tight text-[#06331e] mb-1.5">System Alerts</h1>
@@ -65,7 +66,7 @@ const NotificationsPage: React.FC = () => {
       ) : notifications.length === 0 ? (
         <div className="text-center py-32 flex flex-col items-center">
           <div className="w-16 h-16 bg-zinc-50 border border-zinc-100 rounded-full flex items-center justify-center mb-6">
-             <i className="fas fa-bell-slash text-xl text-zinc-300"></i>
+             <Icon name="bell-slash" className="text-xl text-zinc-300" />
           </div>
           <p className="text-xs font-bold tracking-widest uppercase text-zinc-400">No Alerts for You</p>
           <p className="text-[10px] mt-2 font-medium text-zinc-400">New alerts will appear here after they are sent.</p>

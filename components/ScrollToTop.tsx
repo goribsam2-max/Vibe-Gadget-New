@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Icon from '../components/Icon';
 
 const ScrollToTop: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -36,7 +37,7 @@ const ScrollToTop: React.FC = () => {
           className="fixed bottom-28 md:bottom-10 right-6 z-50 w-12 h-12 bg-black text-white rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95"
           aria-label="Scroll to top"
         >
-          <i className="fas fa-arrow-up text-sm"></i>
+          <Icon name="arrow-up" className="text-sm" />
         </motion.button>
       )}
     </AnimatePresence>

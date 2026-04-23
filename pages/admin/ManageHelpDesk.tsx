@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, doc, updateDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useNotify } from '../../components/Notifications';
+import Icon from '../../components/Icon';
 
 const ManageHelpDesk: React.FC = () => {
     const navigate = useNavigate();
@@ -40,7 +41,7 @@ const ManageHelpDesk: React.FC = () => {
         <div className="max-w-6xl mx-auto px-6 py-10 pb-32 min-h-screen bg-zinc-50/50">
             <div className="flex items-center space-x-6 mb-12">
                 <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-white border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-                    <i className="fas fa-arrow-left text-xs"></i>
+                    <Icon name="arrow-left" className="text-xs" />
                 </button>
                 <div>
                     <h1 className="text-2xl md:text-3xl font-black tracking-tight text-zinc-900 mb-1">Help Desk</h1>
@@ -50,7 +51,7 @@ const ManageHelpDesk: React.FC = () => {
 
             <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden text-sm">
                 {loading ? (
-                    <div className="py-20 text-center"><i className="fas fa-spinner fa-spin text-emerald-500 text-3xl"></i></div>
+                    <div className="py-20 text-center"><Icon name="spinner" className="fa-spin text-emerald-500 text-3xl" /></div>
                 ) : tickets.length > 0 ? (
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-zinc-50/80 border-b border-zinc-200">
@@ -97,7 +98,7 @@ const ManageHelpDesk: React.FC = () => {
                     </table>
                 ) : (
                     <div className="py-24 text-center text-zinc-400">
-                        <i className="fas fa-inbox text-4xl mb-4 text-zinc-300"></i>
+                        <Icon name="inbox" className="text-4xl mb-4 text-zinc-300" />
                         <p className="font-bold text-xs uppercase tracking-widest">No active tickets</p>
                     </div>
                 )}

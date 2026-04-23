@@ -7,6 +7,7 @@ import { useNotify } from '../components/Notifications';
 import { OrderStatus, UserProfile } from '../types';
 import { sendOrderToTelegram } from '../services/telegram';
 import { motion, AnimatePresence } from 'framer-motion';
+import Icon from '../components/Icon';
 
 const CheckoutPage: React.FC = () => {
   const [items, setItems] = useState<any[]>([]);
@@ -189,7 +190,7 @@ const CheckoutPage: React.FC = () => {
       return (
           <div className="min-h-screen flex items-center justify-center bg-white p-6">
               <div className="text-center bg-zinc-50 p-10 rounded-3xl max-w-md border border-zinc-100">
-                  <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl"><i className="fas fa-store-slash"></i></div>
+                  <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl"><Icon name="store-slash" /></div>
                   <h2 className="text-xl font-black tracking-tight mb-2">Store is Currently Closed</h2>
                   <p className="text-xs text-zinc-500 font-bold mb-6">We are not accepting orders at this moment. Please check back later.</p>
                   <button onClick={() => navigate('/')} className="px-8 py-3 bg-black text-white rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-800 transition-colors">Return Home</button>
@@ -202,7 +203,7 @@ const CheckoutPage: React.FC = () => {
     <div className="max-w-5xl mx-auto px-6 py-10 pb-48 bg-white min-h-screen font-inter">
       <div className="flex items-center space-x-6 mb-8">
           <button onClick={() => navigate(-1)} className="p-3 bg-zinc-50 rounded-xl border border-zinc-100 hover:bg-[#06331e] hover:text-white transition-all">
-             <i className="fas fa-arrow-left text-xs"></i>
+             <Icon name="arrow-left" className="text-xs" />
           </button>
           <div>
             <h1 className="text-2xl font-black tracking-tight uppercase">Checkout</h1>
@@ -212,7 +213,7 @@ const CheckoutPage: React.FC = () => {
 
       {settings?.storeNotice && (
           <div className="mb-10 bg-blue-50 border border-blue-100 p-4 rounded-xl flex items-start space-x-3 text-blue-800">
-              <i className="fas fa-info-circle mt-0.5"></i>
+              <Icon name="info-circle" className="mt-0.5" />
               <p className="text-xs font-bold leading-relaxed">{settings.storeNotice}</p>
           </div>
       )}
@@ -263,12 +264,12 @@ const CheckoutPage: React.FC = () => {
                         <p className="text-[8px] font-bold text-zinc-400 uppercase mb-0.5 tracking-widest">bKash Number (Send Money)</p>
                         <p className="font-bold text-lg tracking-widest text-[#06331e]">{BKASH_NUMBER}</p>
                       </div>
-                      <button onClick={copyNumber} className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-lg flex items-center justify-center hover:bg-[#06331e] hover:text-white transition-all"><i className="fas fa-copy text-xs"></i></button>
+                      <button onClick={copyNumber} className="w-10 h-10 bg-zinc-50 border border-zinc-200 rounded-lg flex items-center justify-center hover:bg-[#06331e] hover:text-white transition-all"><Icon name="copy" className="text-xs" /></button>
                    </div>
 
                    <div className="p-4 bg-[#0a4a2b] rounded-xl shadow-lg">
                       <p className="text-[10px] text-zinc-200 font-medium leading-relaxed flex items-start">
-                        <i className="fas fa-info-circle mt-0.5 mr-2 text-white"></i>
+                        <Icon name="info-circle" className="mt-0.5 mr-2 text-white" />
                         Send money to our number above and enter your TrxID below to verify order.
                       </p>
                    </div>
@@ -286,13 +287,13 @@ const CheckoutPage: React.FC = () => {
              {appliedCoupon ? (
                 <div className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600"><i className="fas fa-check text-xs"></i></div>
+                      <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600"><Icon name="check" className="text-xs" /></div>
                       <div>
                          <p className="text-[10px] font-black uppercase tracking-widest text-emerald-800">{appliedCoupon.code}</p>
                          <p className="text-[9px] font-bold text-emerald-600 mt-0.5 uppercase tracking-widest">Applied Successfully</p>
                       </div>
                    </div>
-                   <button onClick={removeCoupon} className="text-[9px] font-bold text-red-500 uppercase tracking-widest hover:text-red-600"><i className="fas fa-times"></i> Remove</button>
+                   <button onClick={removeCoupon} className="text-[9px] font-bold text-red-500 uppercase tracking-widest hover:text-red-600"><Icon name="times" /> Remove</button>
                 </div>
              ) : (
                 <div className="flex space-x-3 relative">
@@ -305,10 +306,10 @@ const CheckoutPage: React.FC = () => {
         </div>
 
         <div className="lg:col-span-5">
-           <div className="bg-[#0a4a2b] text-white p-8 md:p-10 rounded-3xl sticky top-12 border border-zinc-800 shadow-2xl">
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/30 mb-8">Summary</h3>
+           <div className="bg-zinc-900 text-white p-8 md:p-10 rounded-3xl sticky top-12 border border-zinc-800 shadow-2xl">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/40 mb-8">Summary</h3>
               <div className="space-y-4">
-                <div className="flex justify-between text-[10px] font-bold text-white/50 uppercase tracking-widest">
+                <div className="flex justify-between text-[10px] font-bold text-white/60 uppercase tracking-widest">
                   <span>Subtotal</span>
                   <span>৳{subTotal}</span>
                 </div>
@@ -318,7 +319,7 @@ const CheckoutPage: React.FC = () => {
                   <span>-৳{discountAmount}</span>
                 </div>
                 )}
-                <div className="flex justify-between text-[10px] font-bold text-white/50 uppercase tracking-widest">
+                <div className="flex justify-between text-[10px] font-bold text-white/60 uppercase tracking-widest">
                   <span>Delivery</span>
                   <span>৳150</span>
                 </div>
@@ -328,10 +329,10 @@ const CheckoutPage: React.FC = () => {
                   <span>৳{totalAmount}</span>
                 </div>
               </div>
-              <button disabled={loading} onClick={placeOrder} className="w-full mt-10 py-5 bg-white text-[#06331e] rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] shadow-lg hover:bg-zinc-100 transition-all active:scale-[0.98] disabled:opacity-50">
+              <button disabled={loading} onClick={placeOrder} className="w-full mt-10 py-5 bg-white text-black rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] shadow-lg hover:bg-zinc-100 transition-all active:scale-[0.98] disabled:opacity-50">
                 {loading ? "Processing..." : "Complete Order"}
               </button>
-              <p className="text-[7px] text-center mt-6 text-white/20 font-bold uppercase tracking-widest">IP: {userIp}</p>
+              <p className="text-[7px] text-center mt-6 text-white/30 font-bold uppercase tracking-widest">IP: {userIp}</p>
            </div>
         </div>
       </div>
@@ -341,8 +342,8 @@ const CheckoutPage: React.FC = () => {
 
 const Input = ({ label, value, onChange, placeholder, error }: any) => (
   <div className="w-full">
-    <label className={`text-[9px] font-bold uppercase mb-2 block px-1 tracking-widest ${error ? 'text-red-500' : 'text-zinc-300'}`}>{label}</label>
-    <input type="text" placeholder={placeholder} className={`w-full bg-zinc-50 px-5 py-4 rounded-xl text-sm font-medium outline-none border transition-all ${error ? 'border-red-500' : 'border-transparent focus:border-[#06331e]'}`} value={value} onChange={e => onChange(e.target.value)} />
+    <label className={`text-[9px] font-bold uppercase mb-2 block px-1 tracking-widest ${error ? 'text-red-500' : 'text-zinc-500'}`}>{label}</label>
+    <input type="text" placeholder={placeholder} className={`w-full bg-zinc-50 hover:bg-white px-5 py-4 rounded-xl text-sm font-medium outline-none border transition-all shadow-sm ${error ? 'border-red-500 bg-red-50' : 'border-zinc-200 focus:border-black focus:ring-4 focus:ring-black/5'}`} value={value} onChange={e => onChange(e.target.value)} />
   </div>
 );
 

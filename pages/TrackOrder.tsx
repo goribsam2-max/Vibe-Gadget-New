@@ -5,6 +5,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Order, OrderStatus } from '../types';
 import { motion } from 'framer-motion';
+import Icon from '../components/Icon';
 
 const StatusIcon = ({ status }: { status: OrderStatus }) => {
   const base = "w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner ";
@@ -12,37 +13,37 @@ const StatusIcon = ({ status }: { status: OrderStatus }) => {
     case OrderStatus.HOLD:
       return (
         <div className={base + "bg-yellow-100 text-yellow-600"}>
-          <i className="fas fa-pause text-xl"></i>
+          <Icon name="pause" className="text-xl" />
         </div>
       );
     case OrderStatus.PROCESSING:
       return (
         <div className={base + "bg-blue-100 text-blue-600"}>
-          <i className="fas fa-sync-alt text-xl animate-spin"></i>
+          <Icon name="sync-alt" className="text-xl animate-spin" />
         </div>
       );
     case OrderStatus.PACKAGING:
       return (
         <div className={base + "bg-purple-100 text-purple-600"}>
-          <i className="fas fa-box text-xl"></i>
+          <Icon name="box" className="text-xl" />
         </div>
       );
     case OrderStatus.SHIPPED:
       return (
         <div className={base + "bg-orange-100 text-orange-600"}>
-          <i className="fas fa-truck-moving text-xl"></i>
+          <Icon name="truck-moving" className="text-xl" />
         </div>
       );
     case OrderStatus.DELIVERED:
       return (
         <div className={base + "bg-green-100 text-green-600"}>
-          <i className="fas fa-check text-xl"></i>
+          <Icon name="check" className="text-xl" />
         </div>
       );
     default:
       return (
         <div className={base + "bg-zinc-100 text-zinc-400"}>
-          <i className="fas fa-box-open text-xl"></i>
+          <Icon name="box-open" className="text-xl" />
         </div>
       );
   }
@@ -84,7 +85,7 @@ const TrackOrder: React.FC = () => {
     <div className="p-6 md:p-12 pb-48 min-h-screen bg-white max-w-lg mx-auto animate-fade-in">
        <div className="flex items-center space-x-6 mb-12">
           <button onClick={() => navigate(-1)} className="p-3.5 bg-zinc-50 rounded-2xl border border-zinc-100 shadow-sm active:scale-90 transition-all">
-             <i className="fas fa-arrow-left text-xs"></i>
+             <Icon name="arrow-left" className="text-xs" />
           </button>
           <h1 className="text-2xl font-black tracking-tight uppercase text-zinc-900">Track Order</h1>
        </div>
@@ -92,8 +93,8 @@ const TrackOrder: React.FC = () => {
        <div className="bg-zinc-50 rounded-[2.5rem] p-10 flex flex-col items-center text-center border border-zinc-100 mb-12 shadow-sm relative overflow-hidden">
           {order.status === OrderStatus.ON_THE_WAY && (order.riderNumber || order.courierName) && (
             <div className="absolute top-0 left-0 right-0 bg-emerald-500 text-white py-2 px-4 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest shadow-md">
-               <span><i className="fas fa-motorcycle mr-2"></i>{order.courierName || 'Courier'}</span>
-               {order.riderNumber && <a href={`tel:${order.riderNumber}`} className="bg-white text-emerald-600 px-3 py-1 rounded-full"><i className="fas fa-phone-alt mr-2 hover:animate-pulse"></i>{order.riderNumber}</a>}
+               <span><Icon name="motorcycle" className="mr-2" />{order.courierName || 'Courier'}</span>
+               {order.riderNumber && <a href={`tel:${order.riderNumber}`} className="bg-white text-emerald-600 px-3 py-1 rounded-full"><Icon name="phone-alt" className="mr-2 hover:animate-pulse" />{order.riderNumber}</a>}
             </div>
           )}
           <div className="mb-6 mt-4"><StatusIcon status={order.status} /></div>

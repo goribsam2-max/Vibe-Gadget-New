@@ -24,6 +24,7 @@ export interface Product {
   featured?: boolean;
   isOffer?: boolean;
   offerPrice?: number;
+  views?: number;
 }
 
 export interface UserProfile {

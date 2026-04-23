@@ -6,6 +6,7 @@ import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { useNotify } from '../components/Notifications';
 import { uploadToImgbb } from '../services/imgbb';
 import { motion } from 'framer-motion';
+import Icon from '../components/Icon';
 
 const EditProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -68,7 +69,7 @@ const EditProfile: React.FC = () => {
     <div className="p-6 md:p-12 pb-48 bg-white max-w-2xl mx-auto min-h-screen font-inter">
         <div className="flex items-center space-x-6 mb-12">
             <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-zinc-50 rounded-full border border-zinc-100 shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-                <i className="fas fa-chevron-left text-sm"></i>
+                <Icon name="chevron-left" className="text-sm" />
             </button>
             <div className="flex flex-col">
                 <h1 className="text-3xl font-black tracking-tight text-[#06331e] uppercase">Edit Profile</h1>
@@ -87,7 +88,7 @@ const EditProfile: React.FC = () => {
                         disabled={updating} 
                         className="absolute bottom-1 right-1 w-8 h-8 bg-[#06331e] text-white rounded-full flex items-center justify-center hover:bg-[#0a4a2b] shadow-md transition-all active:scale-95"
                     >
-                        <i className="fas fa-camera text-xs"></i>
+                        <Icon name="camera" className="text-xs" />
                     </button>
                     <input type="file" hidden ref={fileInputRef} accept="image/*" onChange={handleImageUpload} />
                 </div>

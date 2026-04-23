@@ -4,6 +4,7 @@ import { collection, getDocs, doc, setDoc, deleteDoc } from 'firebase/firestore'
 import { db } from '../../firebase';
 import { useNotify } from '../../components/Notifications';
 import { motion } from 'framer-motion';
+import Icon from '../../components/Icon';
 
 const ManageRiders: React.FC = () => {
     const navigate = useNavigate();
@@ -59,7 +60,6 @@ const ManageRiders: React.FC = () => {
     };
 
     const handleRemoveRider = async (id: string) => {
-        if(!window.confirm("Remove this rider from the fleet?")) return;
         try {
             await deleteDoc(doc(db, 'riders', id));
             notify("Rider removed", "success");
@@ -76,7 +76,7 @@ const ManageRiders: React.FC = () => {
             <div className="flex items-center justify-between mb-12">
                 <div className="flex items-center space-x-6">
                     <button onClick={() => navigate(-1)} className="w-12 h-12 flex items-center justify-center bg-white border border-zinc-200 text-[#06331e] rounded-full shadow-sm hover:bg-[#06331e] hover:text-white transition-all active:scale-95">
-                        <i className="fas fa-arrow-left text-xs"></i>
+                        <Icon name="arrow-left" className="text-xs" />
                     </button>
                     <div>
                         <h1 className="text-2xl md:text-3xl font-black tracking-tight text-zinc-900 mb-1">Rider Fleet</h1>
@@ -84,7 +84,7 @@ const ManageRiders: React.FC = () => {
                     </div>
                 </div>
                 <button onClick={() => setShowAdd(!showAdd)} className="bg-[#06331e] text-white px-6 py-3 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:bg-emerald-900 transition-colors shadow-lg">
-                    <i className={`fas ${showAdd ? 'fa-times' : 'fa-plus'} mr-2`}></i> {showAdd ? 'Cancel' : 'Add Rider'}
+                    <Icon name={showAdd ? 'times' : 'plus'} className="mr-2" /> {showAdd ? 'Cancel' : 'Add Rider'}
                 </button>
             </div>
 
@@ -136,7 +136,7 @@ const ManageRiders: React.FC = () => {
                       <div className="flex justify-between items-start mb-6 mt-1">
                           <div className="flex items-center space-x-3">
                               <div className="w-10 h-10 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center">
-                                  <i className="fas fa-motorcycle text-sm"></i>
+                                  <Icon name="motorcycle" className="text-sm" />
                               </div>
                               <div>
                                   <h3 className="font-bold text-zinc-900">{rider.name}</h3>
@@ -144,14 +144,14 @@ const ManageRiders: React.FC = () => {
                               </div>
                           </div>
                           <button onClick={() => handleRemoveRider(rider.id)} className="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center">
-                              <i className="fas fa-trash text-xs"></i>
+                              <Icon name="trash" className="text-xs" />
                           </button>
                       </div>
                       
                       <div className="grid grid-cols-2 gap-4 border-t border-zinc-100 pt-5">
                           <div>
                              <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Zone</p>
-                             <p className="font-bold text-zinc-800 text-sm mt-1 flex items-center"><i className="fas fa-map-marker-alt text-emerald-500 mr-2 text-[10px]"></i>{rider.zone}</p>
+                             <p className="font-bold text-zinc-800 text-sm mt-1 flex items-center"><Icon name="map-marker-alt" className="text-emerald-500 mr-2 text-[10px]" />{rider.zone}</p>
                           </div>
                           <div>
                              <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Status / Trips</p>
@@ -166,7 +166,7 @@ const ManageRiders: React.FC = () => {
 
                 {riders.length === 0 && !loading && (
                     <div className="col-span-full py-20 text-center bg-white rounded-3xl border border-zinc-200 shadow-sm text-zinc-400">
-                      <i className="fas fa-motorcycle text-4xl mb-4 text-zinc-300"></i>
+                      <Icon name="motorcycle" className="text-4xl mb-4 text-zinc-300" />
                       <p className="font-bold text-xs uppercase tracking-widest">No riders recorded yet</p>
                    </div>
                 )}

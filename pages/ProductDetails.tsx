@@ -6,6 +6,7 @@ import { auth, db } from '../firebase';
 import { Product, Review } from '../types';
 import { useNotify } from '../components/Notifications';
 import { motion, AnimatePresence } from 'framer-motion';
+import Icon from '../components/Icon';
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams();
@@ -27,10 +28,17 @@ const ProductDetails: React.FC = () => {
       if (snap.exists()) {
         const productData = { id: snap.id, ...snap.data() } as Product;
         setProduct(productData);
+        // Increment views
+        try {
+           const { increment, updateDoc } = await import('firebase/firestore');
+           await updateDoc(doc(db, 'products', id), { views: increment(1) });
+        } catch(e) {}
       }
     };
     fetchProduct();
+  }, [id]);
 
+  useEffect(() => {
     if (id) {
       const q = query(collection(db, 'reviews'), where('productId', '==', id));
       const unsubscribeReviews = onSnapshot(q, (snapshot) => {
@@ -79,17 +87,28 @@ const ProductDetails: React.FC = () => {
     }
   };
 
-  const addToCart = () => {
+  const addToCart = (redirect = false) => {
+    if (!product) return;
     const cart = JSON.parse(localStorage.getItem('f_cart') || '[]');
-    const existingIndex = cart.findIndex((item: any) => item.id === product?.id);
+    const existingIndex = cart.findIndex((item: any) => item.id === product.id);
+    
+    const offerPrice = product.isOffer && product.offerPrice ? product.offerPrice : product.price;
+
     if (existingIndex > -1) {
       cart[existingIndex].quantity += 1;
+      cart[existingIndex].price = offerPrice; // Update to the correct price
     } else {
-      cart.push({ ...product, quantity: 1 });
+      cart.push({ ...product, price: offerPrice, originalPrice: product.price, quantity: 1 });
     }
+
     localStorage.setItem('f_cart', JSON.stringify(cart));
-    notify("Added to cart!", "success");
-    navigate('/cart');
+    
+    if (redirect) {
+      navigate('/checkout');
+    } else {
+      notify("Added to cart!", "success");
+      navigate('/cart');
+    }
   };
 
   const changeImage = (index: number) => {
@@ -134,7 +153,7 @@ const ProductDetails: React.FC = () => {
       <div className="w-full lg:w-1/2 lg:sticky lg:top-12">
         <div className="relative aspect-square md:aspect-video lg:aspect-square bg-zinc-50 rounded-b-[3rem] lg:rounded-[3rem] overflow-hidden flex items-center justify-center border border-zinc-100 group">
           <button onClick={() => navigate(-1)} className="absolute top-6 left-6 z-10 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full text-zinc-600 shadow-sm border border-zinc-200 hover:bg-zinc-900 hover:text-white transition-all active:scale-95">
-            <i className="fas fa-arrow-left text-xs"></i>
+            <Icon name="arrow-left" className="text-xs" />
           </button>
           
           <AnimatePresence initial={false} custom={direction}>
@@ -197,7 +216,7 @@ const ProductDetails: React.FC = () => {
                  )}
               </div>
               <div className="flex items-center space-x-1.5 bg-zinc-50 border border-zinc-100 px-3 py-1.5 rounded-full shadow-sm shrink-0">
-                 <i className="fas fa-star text-yellow-500 text-[10px]"></i>
+                 <Icon name="star" className="text-yellow-500 text-[10px]" />
                  <span className="text-[10px] font-bold text-zinc-700">{product.rating}</span>
                  <span className="text-[9px] font-bold text-zinc-400 capitalize">({product.numReviews || 0} revs)</span>
               </div>
@@ -226,7 +245,7 @@ const ProductDetails: React.FC = () => {
                          <div>
                             <p className="text-sm font-black tracking-tight">{review.userName}</p>
                             <div className="flex text-[9px] text-yellow-400 mt-1">
-                               {[...Array(5)].map((_, i) => <i key={i} className={`${i < review.rating ? 'fas' : 'far'} fa-star mr-1`}></i>)}
+                               {[...Array(5)].map((_, i) => <Icon key={i} name={i < review.rating ? 'star' : 'star-outline'} solid={i < review.rating} className="mr-1 text-[10px]" />)}
                             </div>
                          </div>
                       </div>
@@ -251,19 +270,26 @@ const ProductDetails: React.FC = () => {
            </div>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 md:p-0 md:relative bg-white/90 backdrop-blur-lg border-t border-zinc-100 md:border-0 md:bg-transparent z-50 flex items-center space-x-4">
+        <div className="fixed bottom-0 left-0 right-0 p-4 md:p-0 md:relative bg-white/90 backdrop-blur-lg border-t border-zinc-100 md:border-0 md:bg-transparent z-50 flex items-center space-x-3">
            <button 
-             onClick={addToCart} 
-             className="flex-1 py-4 md:py-4 bg-zinc-900 border border-zinc-900 text-white rounded-full flex items-center justify-center space-x-3 text-xs font-bold uppercase tracking-widest hover:bg-black transition-all active:scale-95 shadow-lg shadow-black/10"
+             onClick={() => addToCart(false)} 
+             className="flex-1 py-4 md:py-4 bg-zinc-100 text-zinc-900 border border-zinc-200 rounded-full flex items-center justify-center space-x-2 text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 transition-all active:scale-95 shadow-sm"
            >
+              <Icon name="shopping-bag" className="text-[10px]" />
               <span>Add to Cart</span>
-              <i className="fas fa-arrow-right text-[10px] opacity-70"></i>
+           </button>
+           <button 
+             onClick={() => addToCart(true)} 
+             className="flex-1 py-4 md:py-4 bg-[#06331e] text-white rounded-full flex items-center justify-center space-x-2 text-xs font-bold uppercase tracking-widest hover:bg-emerald-900 transition-all active:scale-95 shadow-lg shadow-emerald-900/20"
+           >
+              <span>Shop Now</span>
+              <Icon name="bolt" className="text-yellow-400 text-[10px]" />
            </button>
            <button 
              onClick={toggleWishlist}
-             className={`w-14 h-14 md:w-14 md:h-14 flex items-center justify-center rounded-full border transition-all active:scale-90 shadow-sm ${isWishlisted ? 'bg-red-50 text-red-500 border-red-100' : 'bg-white text-zinc-400 border-zinc-200 hover:border-zinc-300 hover:text-zinc-600'}`}
+             className={`w-14 h-14 md:w-14 md:h-14 shrink-0 flex items-center justify-center rounded-full border transition-all active:scale-90 shadow-sm ${isWishlisted ? 'bg-red-50 text-red-500 border-red-100' : 'bg-white text-zinc-400 border-zinc-200 hover:border-zinc-300 hover:text-zinc-600'}`}
            >
-             <i className={`${isWishlisted ? 'fas' : 'far'} fa-heart text-sm`}></i>
+             <Icon name="heart" solid={isWishlisted} className="text-sm" />
            </button>
         </div>
       </div>
@@ -281,7 +307,7 @@ const ProductDetails: React.FC = () => {
               whileHover={{ scale: 1.1 }}
               className="absolute top-10 right-10 text-white p-5 bg-white/10 rounded-full hover:bg-white/20 transition-all z-[10001]"
             >
-              <i className="fas fa-times text-2xl"></i>
+              <Icon name="times" className="text-2xl" />
             </motion.button>
             <motion.img 
               initial={{ scale: 0.8, opacity: 0, y: 50 }}
